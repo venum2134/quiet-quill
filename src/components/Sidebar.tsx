@@ -118,7 +118,8 @@ export function Sidebar() {
         </Link>
         <div style={{ flex: 1 }} />
         <UserMenu compact />
-      </aside>
+      </motion.aside>
+
     );
   }
 
