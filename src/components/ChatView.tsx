@@ -526,15 +526,19 @@ export function ChatView({ threadId, initialMessages }: Props) {
               ref={fileInputRef} type="file" accept="image/*" multiple hidden
               onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }}
             />
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1, backgroundColor: "#ece9e2" }}
+              whileTap={{ scale: 0.9 }}
+              transition={springSnappy}
               onClick={() => fileInputRef.current?.click()}
-              className="pplx-pill flex h-8 w-8 items-center justify-center"
+              className="flex h-8 w-8 items-center justify-center"
               style={{ borderRadius: 9999, color: "#72706b", background: "transparent", border: "none" }}
               aria-label="Attach image"
               title="Joindre une image"
             >
               <Plus size={18} strokeWidth={1.5} />
-            </button>
+            </motion.button>
+
           </div>
 
           <div className="flex items-center gap-1">
