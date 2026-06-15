@@ -205,35 +205,49 @@ export function Sidebar() {
         </nav>
 
         {/* Pinned */}
-        {pinned.length > 0 && (
-          <div className="flex flex-col gap-0.5 pb-3">
-            <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>Pinned</div>
-            {pinned.map((t) => (
-              <ThreadRow
-                key={t.id} thread={t} isActive={t.id === activeId} renamingId={renamingId}
-                renameDraft={renameDraft} setRenameDraft={setRenameDraft}
-                onCommitRename={commitRename} onStartRename={startRename} onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-3 pt-2">
-          {Object.entries(groups).map(([group, items]) => {
-            if (items.length === 0) return null;
-            return (
-              <div key={group} className="flex flex-col gap-0.5">
-                <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>
-                  {group}
-                </div>
-                {items.map((t) => (
+        <AnimatePresence initial={false}>
+          {pinned.length > 0 && (
+            <motion.div
+              key="pinned-section"
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: easeOut }}
+              className="flex flex-col gap-0.5 overflow-hidden pb-3"
+            >
+              <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>Pinned</div>
+              <AnimatePresence initial={false}>
+                {pinned.map((t) => (
                   <ThreadRow
                     key={t.id} thread={t} isActive={t.id === activeId} renamingId={renamingId}
                     renameDraft={renameDraft} setRenameDraft={setRenameDraft}
                     onCommitRename={commitRename} onStartRename={startRename} onDelete={handleDelete}
                   />
                 ))}
-              </div>
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="flex flex-col gap-3 pt-2">
+          {Object.entries(groups).map(([group, items]) => {
+            if (items.length === 0) return null;
+            return (
+              <motion.div key={group} layout className="flex flex-col gap-0.5">
+                <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>
+                  {group}
+                </div>
+                <AnimatePresence initial={false}>
+                  {items.map((t) => (
+                    <ThreadRow
+                      key={t.id} thread={t} isActive={t.id === activeId} renamingId={renamingId}
+                      renameDraft={renameDraft} setRenameDraft={setRenameDraft}
+                      onCommitRename={commitRename} onStartRename={startRename} onDelete={handleDelete}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
           {filtered.length === 0 && (
@@ -242,6 +256,7 @@ export function Sidebar() {
             </div>
           )}
         </div>
+
       </div>
 
       <div className="shrink-0 px-2 pb-2 pt-2" style={{ borderTop: "1px solid #ece9e2" }}>
