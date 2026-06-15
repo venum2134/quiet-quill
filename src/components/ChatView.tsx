@@ -204,7 +204,7 @@ function MessageBubble({
   };
 
   return (
-    <div className="group pplx-fade-in">
+    <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="group">
       <div className="pplx-markdown" style={{ color: "#27251e", fontSize: 15, lineHeight: 1.65 }}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
