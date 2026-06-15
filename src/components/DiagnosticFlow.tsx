@@ -636,11 +636,24 @@ function ScanProgress({ lines, done }: { lines: string[]; done: boolean }) {
       <div className="flex flex-col gap-1 font-mono" style={{ fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace', fontSize: 12.5, lineHeight: 1.6 }}>
         <div style={{ color: "#72706b" }}>$ obsidian scan --consent verified</div>
         {lines.map((l, i) => (
-          <div key={i} className="pplx-fade-in" style={{ color: "#27251e" }}>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.25, ease: easeOut }}
+            style={{ color: "#27251e" }}
+          >
             <span style={{ color: "#92918b" }}>›</span> {l}
-          </div>
+          </motion.div>
         ))}
-        {!done && <div style={{ color: "#92918b" }}>…</div>}
+        {!done && (
+          <motion.div
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ color: "#92918b" }}
+          >…</motion.div>
+        )}
+
       </div>
       {done && (
         <p style={{ fontSize: 13, color: "#27251e", margin: 0 }}>
