@@ -284,6 +284,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
   const [generationStart, setGenerationStart] = useState<number | null>(null);
   const [lastDuration, setLastDuration] = useState<number | undefined>(undefined);
   const [usedModel, setUsedModel] = useState<string | undefined>(undefined);
+  const [hoveredModel, setHoveredModel] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -553,23 +554,62 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 </button>
               </PopoverTrigger>
               <PopoverContent align="end" sideOffset={8} className="w-[300px] p-1" style={{ background: "#faf8f5", border: "1px solid #ece9e2", borderRadius: 12 }}>
-                {MODELS.map((m) => {
-                  const active = m.id === selectedModel;
-                  return (
-                    <button
-                      key={m.id}
-                      onClick={() => { setSelectedModel(m.id); toast.success(`Modèle : ${m.short}`); }}
-                      className="flex w-full items-start gap-2 px-3 py-2 text-left"
-                      style={{ borderRadius: 8, background: active ? "#ece9e2" : "transparent", border: "none", cursor: "pointer" }}
-                    >
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#27251e" }}>{m.label}</div>
-                        <div style={{ fontSize: 12, color: "#72706b", marginTop: 2 }}>{m.description}</div>
-                      </div>
-                      {active && <Check size={14} strokeWidth={2} style={{ color: "#27251e", marginTop: 2 }} />}
-                    </button>
-                  );
-                })}
+                <motion.div
+                  initial="hidden"
+                  animate="show"
+                  variants={staggerContainer}
+                  onMouseLeave={() => setHoveredModel(null)}
+                >
+                  {MODELS.map((m) => {
+                    const active = m.id === selectedModel;
+                    const hovered = hoveredModel === m.id;
+                    const highlighted = hovered || (hoveredModel === null && active);
+                    return (
+                      <motion.button
+                        key={m.id}
+                        variants={fadeInUp}
+                        onMouseEnter={() => setHoveredModel(m.id)}
+                        onFocus={() => setHoveredModel(m.id)}
+                        onClick={() => { setSelectedModel(m.id); toast.success(`Modèle : ${m.short}`); }}
+                        whileTap={{ scale: 0.98 }}
+                        className="relative flex w-full items-start gap-2 px-3 py-2 text-left"
+                        style={{ background: "transparent", border: "none", cursor: "pointer", borderRadius: 8 }}
+                      >
+                        {highlighted && (
+                          <motion.div
+                            layoutId="model-hover-bg"
+                            transition={springSnappy}
+                            style={{ position: "absolute", inset: 0, background: "#ece9e2", borderRadius: 8, zIndex: 0 }}
+                          />
+                        )}
+                        <div style={{ flex: 1, position: "relative", zIndex: 1 }}>
+                          <motion.div
+                            animate={{ x: hovered ? 3 : 0 }}
+                            transition={springSnappy}
+                            style={{ fontSize: 13, fontWeight: 600, color: "#27251e" }}
+                          >
+                            {m.label}
+                          </motion.div>
+                          <div style={{ fontSize: 12, color: "#72706b", marginTop: 2 }}>{m.description}</div>
+                        </div>
+                        <AnimatePresence>
+                          {active && (
+                            <motion.span
+                              key="check"
+                              initial={{ opacity: 0, scale: 0.5 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.5 }}
+                              transition={springSnappy}
+                              style={{ position: "relative", zIndex: 1, marginTop: 2 }}
+                            >
+                              <Check size={14} strokeWidth={2} style={{ color: "#27251e" }} />
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
               </PopoverContent>
             </Popover>
 
