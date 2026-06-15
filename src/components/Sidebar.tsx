@@ -282,7 +282,24 @@ function ThreadRow({
 }) {
   const isRenaming = renamingId === thread.id;
   return (
-    <div className="pplx-side-item group relative flex w-full items-center" style={{ borderRadius: 6, background: isActive ? "#ece9e2" : "transparent" }}>
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -8, height: 0, marginTop: 0, marginBottom: 0 }}
+      transition={{ duration: 0.2, ease: easeOut }}
+      className="pplx-side-item group relative flex w-full items-center"
+      style={{ borderRadius: 6, background: "transparent" }}
+    >
+      {isActive && (
+        <motion.div
+          layoutId="active-thread-bg"
+          transition={springSoft}
+          style={{ position: "absolute", inset: 0, background: "#ece9e2", borderRadius: 6, zIndex: 0 }}
+        />
+      )}
+      <div style={{ position: "relative", zIndex: 1, display: "flex", width: "100%", alignItems: "center" }}>
+
       {isRenaming ? (
         <input
           autoFocus
