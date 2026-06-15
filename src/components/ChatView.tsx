@@ -476,24 +476,38 @@ export function ChatView({ threadId, initialMessages }: Props) {
         {/* attachments preview */}
         {attachments.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
-            {attachments.map((a, i) => (
-              <div key={i} className="relative" style={{ borderRadius: 8, overflow: "hidden", border: "1px solid #ece9e2" }}>
-                <img src={a.url} alt={a.name} style={{ width: 60, height: 60, objectFit: "cover", display: "block" }} />
-                <button
-                  onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                  style={{
-                    position: "absolute", top: 2, right: 2, width: 18, height: 18,
-                    borderRadius: 9999, background: "rgba(0,0,0,0.7)", color: "#faf8f5",
-                    border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-                  }}
-                  aria-label="Remove"
+            <AnimatePresence initial={false}>
+              {attachments.map((a, i) => (
+                <motion.div
+                  key={a.url}
+                  layout
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={springSnappy}
+                  className="relative"
+                  style={{ borderRadius: 8, overflow: "hidden", border: "1px solid #ece9e2" }}
                 >
-                  <X size={11} strokeWidth={2.5} />
-                </button>
-              </div>
-            ))}
+                  <img src={a.url} alt={a.name} style={{ width: 60, height: 60, objectFit: "cover", display: "block" }} />
+                  <motion.button
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.85 }}
+                    onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                    style={{
+                      position: "absolute", top: 2, right: 2, width: 18, height: 18,
+                      borderRadius: 9999, background: "rgba(0,0,0,0.7)", color: "#faf8f5",
+                      border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+                    }}
+                    aria-label="Remove"
+                  >
+                    <X size={11} strokeWidth={2.5} />
+                  </motion.button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
+
 
         <textarea
           ref={textareaRef}
