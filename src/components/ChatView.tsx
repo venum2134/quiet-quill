@@ -159,7 +159,7 @@ function MessageBubble({
       );
     }
     return (
-      <div className="group flex justify-end pplx-fade-in">
+      <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="group flex justify-end">
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", maxWidth: "85%", gap: 6 }}>
           {images.length > 0 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
