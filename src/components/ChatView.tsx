@@ -1,11 +1,12 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
   ArrowRight, Mic, Plus, Monitor, Sparkles, Globe, BookOpen, LineChart,
-  Image as ImageIcon, Square,
+  Image as ImageIcon, Square, ShieldCheck,
 } from "lucide-react";
 import { deriveTitle, getThread, saveThread } from "@/lib/threads";
 
@@ -169,12 +170,29 @@ export function ChatView({ threadId, initialMessages }: Props) {
       <div className="flex min-h-screen flex-1 flex-col items-center justify-center px-8">
         <div className="flex w-full flex-col items-center" style={{ maxWidth: 720 }}>
           <h1
-            className="pplx-wordmark-in mb-10 text-center"
+            className="pplx-wordmark-in mb-3 text-center"
             style={{ fontSize: 60, fontWeight: 450, color: "#27251e", lineHeight: 1, fontVariationSettings: '"wght" 450' }}
           >
-            perplexity
+            obsidian
           </h1>
-          <div className="pplx-fade-up w-full" style={{ animationDelay: "120ms" }}>{inputBox}</div>
+          <p
+            className="pplx-fade-up mb-8 text-center"
+            style={{ fontSize: 14, color: "#72706b", animationDelay: "80ms", maxWidth: 460 }}
+          >
+            Le pentest automatisé, démocratisé. Pose une question, ou lance un diagnostic sur ton domaine.
+          </p>
+
+          <Link
+            to="/diagnostic"
+            className="pplx-fade-up pplx-dark-pill mb-6 flex items-center gap-2 px-5 py-2.5"
+            style={{ animationDelay: "100ms", borderRadius: 9999, fontSize: 14, fontWeight: 500, color: "#faf8f5", background: "#000000", border: "none" }}
+          >
+            <ShieldCheck size={15} strokeWidth={1.8} />
+            Lancer un diagnostic
+            <ArrowRight size={14} strokeWidth={2} />
+          </Link>
+
+          <div className="pplx-fade-up w-full" style={{ animationDelay: "160ms" }}>{inputBox}</div>
 
           <div className="mt-10 flex w-full gap-3 overflow-x-auto pb-2">
             {suggestions.map((s, i) => (
@@ -182,7 +200,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 key={s.label}
                 onClick={() => submit(s.prompt)}
                 className="pplx-card pplx-fade-up flex shrink-0 flex-col gap-3 p-4 text-left"
-                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", animationDelay: `${200 + i * 70}ms` }}
+                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", animationDelay: `${220 + i * 70}ms` }}
               >
                 <div className="flex items-center gap-2">
                   <s.icon size={16} strokeWidth={1.5} style={{ color: "#27251e" }} />
@@ -197,7 +215,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
         </div>
 
         <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center" style={{ fontSize: 12, color: "#92918b" }}>
-          Perplexity may produce inaccurate information about people, places, or facts.
+          Obsidian peut produire des informations inexactes. Vérifie toujours les recommandations critiques.
         </div>
       </div>
     );
@@ -227,7 +245,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
         <div className="mx-auto" style={{ maxWidth: 760 }}>
           {inputBox}
           <div className="mt-2 text-center" style={{ fontSize: 11, color: "#92918b" }}>
-            Perplexity may produce inaccurate information.
+            Obsidian peut produire des informations inexactes.
           </div>
         </div>
       </div>
