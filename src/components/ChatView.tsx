@@ -573,27 +573,44 @@ export function ChatView({ threadId, initialMessages }: Props) {
               </PopoverContent>
             </Popover>
 
-            {isLoading ? (
-              <button
-                onClick={() => stop()}
-                className="pplx-submit flex h-9 w-9 items-center justify-center"
-                style={{ borderRadius: 9999, backgroundColor: "#000000", color: "#faf8f5", border: "none" }}
-                aria-label="Stop (Esc)"
-                title="Arrêter (Esc)"
-              >
-                <Square size={14} strokeWidth={2.2} fill="#faf8f5" />
-              </button>
-            ) : (
-              <button
-                onClick={() => submit(input)}
-                disabled={!input.trim() && attachments.length === 0}
-                className="pplx-submit flex h-9 w-9 items-center justify-center"
-                style={{ borderRadius: 9999, backgroundColor: (input.trim() || attachments.length > 0) ? "#000000" : "#d4d2cc", color: "#faf8f5", border: "none" }}
-                aria-label="Submit"
-              >
-                <ArrowRight size={16} strokeWidth={2.2} />
-              </button>
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {isLoading ? (
+                <motion.button
+                  key="stop"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={springSnappy}
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => stop()}
+                  className="flex h-9 w-9 items-center justify-center"
+                  style={{ borderRadius: 9999, backgroundColor: "#000000", color: "#faf8f5", border: "none" }}
+                  aria-label="Stop (Esc)"
+                  title="Arrêter (Esc)"
+                >
+                  <Square size={14} strokeWidth={2.2} fill="#faf8f5" />
+                </motion.button>
+              ) : (
+                <motion.button
+                  key="send"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={springSnappy}
+                  whileHover={(input.trim() || attachments.length > 0) ? { scale: 1.08 } : undefined}
+                  whileTap={(input.trim() || attachments.length > 0) ? { scale: 0.9 } : undefined}
+                  onClick={() => submit(input)}
+                  disabled={!input.trim() && attachments.length === 0}
+                  className="flex h-9 w-9 items-center justify-center"
+                  style={{ borderRadius: 9999, backgroundColor: (input.trim() || attachments.length > 0) ? "#000000" : "#d4d2cc", color: "#faf8f5", border: "none" }}
+                  aria-label="Submit"
+                >
+                  <ArrowRight size={16} strokeWidth={2.2} />
+                </motion.button>
+              )}
+            </AnimatePresence>
+
           </div>
         </div>
       </div>
