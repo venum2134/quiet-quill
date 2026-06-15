@@ -284,6 +284,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
   const [generationStart, setGenerationStart] = useState<number | null>(null);
   const [lastDuration, setLastDuration] = useState<number | undefined>(undefined);
   const [usedModel, setUsedModel] = useState<string | undefined>(undefined);
+  const [hoveredModel, setHoveredModel] = useState<string | null>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
