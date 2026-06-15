@@ -646,13 +646,23 @@ export function ChatView({ threadId, initialMessages }: Props) {
 
           <div className="pplx-fade-up w-full" style={{ animationDelay: "160ms" }}>{inputBox}</div>
 
-          <div className="mt-10 flex w-full gap-3 overflow-x-auto pb-2">
-            {suggestions.map((s, i) => (
-              <button
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="mt-10 flex w-full gap-3 overflow-x-auto pb-2"
+            style={{ paddingTop: 4 }}
+          >
+            {suggestions.map((s) => (
+              <motion.button
                 key={s.label}
+                variants={fadeInUp}
+                whileHover={{ y: -3, borderColor: "#d4d2cc" }}
+                whileTap={{ scale: 0.98 }}
+                transition={springSnappy}
                 onClick={() => submit(s.prompt)}
-                className="pplx-card pplx-fade-up flex shrink-0 flex-col gap-3 p-4 text-left"
-                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", animationDelay: `${220 + i * 70}ms` }}
+                className="flex shrink-0 flex-col gap-3 p-4 text-left"
+                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", cursor: "pointer" }}
               >
                 <div className="flex items-center gap-2">
                   <s.icon size={16} strokeWidth={1.5} style={{ color: "#27251e" }} />
@@ -661,9 +671,10 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 <div style={{ fontSize: 12, color: "#72706b", lineHeight: 1.4 }}>
                   {s.prompt}
                 </div>
-              </button>
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
+
         </div>
 
         <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center" style={{ fontSize: 12, color: "#92918b" }}>
