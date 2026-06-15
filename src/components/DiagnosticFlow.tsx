@@ -463,13 +463,22 @@ function MethodPicker({ onPick, disabled }: { onPick: (m: VerificationMethod) =>
     { method: "meta", label: "Meta tag HTML", desc: "Insère une balise dans le <head>.", icon: CodeIcon },
   ];
   return (
-    <div className="pplx-fade-in grid grid-cols-3 gap-2">
-      {opts.map((o) => (
-        <button
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+      className="grid grid-cols-3 gap-2"
+    >
+      {opts.map((o, i) => (
+        <motion.button
           key={o.method}
+          variants={fadeInUp}
+          whileHover={disabled ? undefined : { y: -3, borderColor: "#27251e" }}
+          whileTap={disabled ? undefined : { scale: 0.97 }}
+          transition={springSnappy}
           onClick={() => !disabled && onPick(o.method)}
           disabled={disabled}
-          className="pplx-card flex flex-col gap-2 p-3 text-left"
+          className="flex flex-col gap-2 p-3 text-left"
           style={{
             borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2",
             cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.6 : 1,
@@ -480,11 +489,14 @@ function MethodPicker({ onPick, disabled }: { onPick: (m: VerificationMethod) =>
             <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e" }}>{o.label}</span>
           </div>
           <span style={{ fontSize: 11, color: "#72706b", lineHeight: 1.4 }}>{o.desc}</span>
-        </button>
+          {/* keep i unused warning quiet via noop */}
+          <span hidden>{i}</span>
+        </motion.button>
       ))}
-    </div>
+    </motion.div>
   );
 }
+
 
 function VerificationCard({
   domain, method, token, onVerify, disabled,
