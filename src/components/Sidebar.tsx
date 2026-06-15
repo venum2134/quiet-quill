@@ -1,8 +1,8 @@
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Search, Compass, Library, Monitor, PanelLeftClose, SquarePen,
-  MoreHorizontal, MoreVertical, Trash2,
+  MoreHorizontal, MoreVertical, Trash2, ShieldCheck,
 } from "lucide-react";
 import {
   createThread, deleteThread, groupByDate, loadThreads, subscribeThreads,
@@ -73,12 +73,12 @@ export function Sidebar() {
       <div className="flex shrink-0 items-center justify-between px-3" style={{ height: 52 }}>
         <div className="flex items-center gap-2">
           <div style={{
-            width: 22, height: 22, borderRadius: 9999, background: "#27251e",
+            width: 22, height: 22, borderRadius: 6, background: "#27251e",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#faf8f5", fontSize: 12, fontWeight: 500,
-          }}>p</div>
+            color: "#faf8f5", fontSize: 12, fontWeight: 600,
+          }}>◆</div>
           <span style={{ fontSize: 14, color: "#27251e", fontWeight: 500, letterSpacing: "-0.012em" }}>
-            perplexity
+            obsidian
           </span>
         </div>
         <button
