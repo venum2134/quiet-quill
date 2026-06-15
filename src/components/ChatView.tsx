@@ -253,11 +253,13 @@ function MessageBubble({
 
 function ActionBtn({ children, label, onClick, active }: { children: React.ReactNode; label: string; onClick: () => void; active?: boolean }) {
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.08, backgroundColor: "#ece9e2" }}
+      whileTap={{ scale: 0.92 }}
+      transition={springSnappy}
       onClick={onClick}
       title={label}
       aria-label={label}
-      className="pplx-pill"
       style={{
         display: "flex", alignItems: "center", justifyContent: "center",
         width: 28, height: 28, borderRadius: 6, border: "none",
@@ -266,9 +268,10 @@ function ActionBtn({ children, label, onClick, active }: { children: React.React
       }}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
+
 
 /* ---------- Main ChatView ---------- */
 export function ChatView({ threadId, initialMessages }: Props) {
