@@ -422,31 +422,41 @@ export function ChatView({ threadId, initialMessages }: Props) {
   const inputBox = (
     <div className="relative w-full">
       {/* Slash menu */}
-      {slashOpen && (
-        <div
-          className="pplx-fade-in absolute left-0 right-0 z-20"
-          style={{
-            bottom: "calc(100% + 8px)", background: "#faf8f5", border: "1px solid #ece9e2",
-            borderRadius: 12, padding: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-          }}
-        >
-          {filteredSlash.map((c, i) => (
-            <button
-              key={c.cmd}
-              onMouseEnter={() => setSlashIdx(i)}
-              onClick={() => runSlash(c)}
-              className="flex w-full items-center justify-between px-3 py-2 text-left"
-              style={{
-                borderRadius: 8, background: i === slashIdx ? "#ece9e2" : "transparent",
-                border: "none", cursor: "pointer",
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e", fontFamily: "ui-monospace, monospace" }}>{c.cmd}</span>
-              <span style={{ fontSize: 12, color: "#72706b" }}>{c.description}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {slashOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.98 }}
+            transition={{ duration: 0.16, ease: easeOut }}
+            className="absolute left-0 right-0 z-20"
+            style={{
+              bottom: "calc(100% + 8px)", background: "#faf8f5", border: "1px solid #ece9e2",
+              borderRadius: 12, padding: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+            }}
+          >
+            {filteredSlash.map((c, i) => (
+              <motion.button
+                key={c.cmd}
+                initial={{ opacity: 0, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.025, duration: 0.18, ease: easeOut }}
+                onMouseEnter={() => setSlashIdx(i)}
+                onClick={() => runSlash(c)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left"
+                style={{
+                  borderRadius: 8, background: i === slashIdx ? "#ece9e2" : "transparent",
+                  border: "none", cursor: "pointer",
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e", fontFamily: "ui-monospace, monospace" }}>{c.cmd}</span>
+                <span style={{ fontSize: 12, color: "#72706b" }}>{c.description}</span>
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       <div
         className="pplx-input-wrap w-full"
