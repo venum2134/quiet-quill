@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight, ShieldCheck, Globe, FileText, Code as CodeIcon, Copy, Check,
   Loader2, RefreshCw, AlertTriangle, Sparkles,
@@ -8,6 +9,7 @@ import {
   loadDiagnostic, makeToken, newBubble, normalizeDomain, resetDiagnostic, saveDiagnostic,
   type DiagnosticState, type VerificationMethod, type ChatBubble,
 } from "@/lib/diagnostic";
+import { fadeInUp, springSnappy, easeOut } from "@/lib/motion";
 
 type Action =
   | { type: "hydrate"; state: DiagnosticState }
