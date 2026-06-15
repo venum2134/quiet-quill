@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Search, PanelLeftClose, PanelLeftOpen, SquarePen, MoreHorizontal,
   ShieldCheck, Settings, LogOut, Download, Trash2, Pin, PinOff, Pencil, FileDown,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/threads";
 import { useSidebarCollapsed } from "@/lib/preferences";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { springSoft, springSnappy, easeOut } from "@/lib/motion";
 
 export function Sidebar() {
   const navigate = useNavigate();
