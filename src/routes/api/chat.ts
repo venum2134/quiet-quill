@@ -2,26 +2,36 @@ import { createLovableAiGatewayProvider, withLovableAiGatewayRunIdHeader } from 
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
-const SYSTEM_PROMPT = `You are Perplexity, a helpful AI assistant. Answer the user clearly and concisely.
-Format responses with markdown: use **bold**, lists, headings, and \`code\` where helpful.
-Use code blocks with language tags for code. Be direct and substantive.`;
+const SYSTEM_PROMPT = `Tu es Obsidian, un assistant IA expert en cybersécurité (pentest, OWASP, CVE, durcissement, threat modeling). Réponds en français par défaut, clairement et de manière actionnable.
+Formate avec markdown : **gras**, listes, titres, et blocs de code avec langage. Cite les CVE/CWE pertinents. Sois direct et substantif.`;
+
+const ALLOWED_MODELS = new Set([
+  "google/gemini-3-flash-preview",
+  "google/gemini-3.1-pro-preview",
+  "openai/gpt-5",
+  "openai/gpt-5.4",
+]);
 
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
-          const { messages } = (await request.json()) as { messages?: UIMessage[] };
+          const body = (await request.json()) as { messages?: UIMessage[]; model?: string };
+          const messages = body.messages;
           if (!Array.isArray(messages)) {
             return new Response("Messages are required", { status: 400 });
           }
+
+          const modelId =
+            body.model && ALLOWED_MODELS.has(body.model) ? body.model : "google/gemini-3-flash-preview";
 
           const key = process.env.LOVABLE_API_KEY;
           if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
           const gateway = createLovableAiGatewayProvider(key);
           const result = streamText({
-            model: gateway("google/gemini-3-flash-preview"),
+            model: gateway(modelId),
             system: SYSTEM_PROMPT,
             messages: await convertToModelMessages(messages),
           });

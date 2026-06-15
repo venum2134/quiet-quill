@@ -1,114 +1,149 @@
+# Plan — Obsidian UI upgrade (P1 + P2)
 
-## Objectif
-
-Rebrander l'app en **Obsidian** et ajouter un flow `/diagnostic` qui force l'utilisateur à passer 4 étapes de vérification (URL → propriété domaine → consentement → lancement) avant qu'un scan ne soit "déclenché". Tout reste **frontend** (state machine + localStorage), pas d'agents réels — on prépare juste le terrain UX/légal.
-
-Design : on garde le langage visuel actuel (cream `#faf8f5`, ink `#27251e`, bordures `#ece9e2`, animations `pplx-fade-in` / `pplx-fade-up`, cartes arrondies, input pill noir). Aucun nouveau token couleur — on réutilise le système existant pour rester premium et cohérent.
+Objectif : éliminer tous les boutons décoratifs et amener le chat au niveau Claude/ChatGPT/Perplexity. Tout reste 100% frontend (localStorage), design beige actuel préservé. Aucune nouvelle dépendance backend.
 
 ---
 
-## 1. Rebranding Obsidian
+## P1 — Tuer les boutons morts
 
-- Wordmark landing : `perplexity` → `obsidian` (même taille, même graisse)
-- Footer disclaimers : `Perplexity may produce…` → `Obsidian may produce…`
-- Title / meta dans `__root.tsx` et routes : `Obsidian — Automated pentest, democratized`
-- Sidebar : ajouter un nouvel item nav `Diagnostic` (icône `ShieldCheck`) en haut de la liste, au-dessus de Discover. Clic → navigue vers `/diagnostic`.
-- Cartes de suggestion sur la landing : remplacer les 5 suggestions génériques (quantum, S&P 500…) par 5 prompts cybersécurité orientés Obsidian :
-  - `Lancer un diagnostic` (CTA principal, style légèrement accentué) → push `/diagnostic`
-  - `Expliquer une CVE`
-  - `Analyser un header HTTP`
-  - `Comprendre OWASP Top 10`
-  - `Auditer un site WordPress`
+### 1.1 Sélecteur de modèle réel (composer)
+- Remplacer le pill `Gemini 3 Flash ▾` statique par un **vrai dropdown** (Popover shadcn) avec 4 modèles via l'AI Gateway :
+  - `google/gemini-3-flash-preview` — "Rapide · défaut"
+  - `google/gemini-3-pro-preview` — "Raisonnement profond"
+  - `anthropic/claude-sonnet-4.5` — "Analyse experte"
+  - `openai/gpt-5` — "Polyvalent"
+- Stocké dans `localStorage` (`obsidian:model`), envoyé via `body` du `useChat` transport.
+- API route `/api/chat` lit `model` du body au lieu du hardcode.
+- Chaque entrée du menu : nom + 1 ligne de description + checkmark sur le sélectionné.
 
-## 2. Nouvelle route `/diagnostic`
+### 1.2 Menu user (bas sidebar)
+- Popover sur le bouton profil "Antoine / Free plan" :
+  - Settings (ouvre `/settings`)
+  - Keyboard shortcuts (ouvre modale `⌘/`)
+  - Effacer toutes les conversations (avec confirm)
+  - Export JSON de tous les threads
+- Pseudo + plan éditables dans `/settings` (localStorage `obsidian:user`).
 
-Fichier : `src/routes/diagnostic.tsx`. Pas un thread chat classique — c'est une **conversation guidée** rendue dans le même layout (sidebar + colonne centrale, max-width 760, bulles user `#f1efea`, réponses assistant en markdown). On réutilise les composants visuels mais on contrôle la state machine nous-mêmes (pas de `useChat`).
+### 1.3 Menu 3-dots par thread (sidebar)
+- Remplacer le `Trash2` direct par un `MoreHorizontal` qui ouvre un Popover :
+  - Renommer (inline edit du titre)
+  - Pin / Unpin (nouvelle section "Pinned" en haut de la liste)
+  - Exporter (Markdown)
+  - Supprimer (avec confirm toast)
+- Hover-only sur desktop, toujours visible si actif.
 
-### State machine (frontend, localStorage)
+### 1.4 Toggle sidebar fonctionnel
+- Bouton `PanelLeftClose` → collapse à 56px (icônes only).
+- État dans `localStorage` (`obsidian:sidebar`).
+- En collapsed : logo, New, Diagnostic, profil restent visibles en icônes. Threads cachés. Raccourci `⌘\`.
+- Quand collapsed, un mini bouton "expand" flotte sur le bord.
 
-```text
-idle → awaiting_url → url_invalid (retry)
-                   → awaiting_method
-                       → method_chosen (dns | meta | file)
-                           → awaiting_verification (polling simulé)
-                               → verification_failed (retry / change method)
-                               → verified
-                                   → awaiting_consent
-                                       → consent_given
-                                           → scan_running (faux stream)
-                                               → scan_complete
-```
+### 1.5 Items nav décoratifs
+- Supprimer `Discover`, `Spaces`, `Library` du sidebar (pas de roadmap pour eux).
+- Garder uniquement `Diagnostic`. Ajouter `Settings` en bas.
 
-Chaque transition push une nouvelle "bulle" dans le chat avec animation `pplx-fade-in`. L'input du bas change de mode selon l'étape (texte libre, bouton CTA, checkbox + bouton, désactivé pendant scan).
+### 1.6 Bouton Mic + Computer
+- Mic : retirer (pas de roadmap voice court terme), ou l'implémenter avec `webkitSpeechRecognition`. **Décision : retirer** pour éviter un faux feature.
+- `Computer` pill : retirer (concept Anthropic computer-use non implémenté).
 
-### Étape 1 — URL
+---
 
-Bulle assistant : *"Quel domaine veux-tu analyser ?"* + petit texte gris *"Exemple : monsite.ma"*. Input texte normal. Validation regex domaine simple côté front. Si invalide → bulle assistant rouge subtile (bordure `#ece9e2`, texte `#27251e`) : *"Ce domaine n'a pas l'air valide. Réessaie."*
+## P2 — Features chat premium
 
-### Étape 2 — Choix méthode de vérification
+### 2.1 Barre d'actions sous chaque réponse assistant
+Apparait au hover du message :
+- **Copy** (copie le markdown brut → toast "Copié")
+- **Regenerate** (rejoue le dernier user message, supprime la réponse actuelle)
+- **Thumbs up / down** (stocké localement, `obsidian:feedback`)
+- **Read aloud** (Web Speech API `speechSynthesis`)
+- Footer discret : nom du modèle utilisé + durée de génération (timer entre `submitted` et `ready`)
 
-Bulle assistant + carte avec 3 boutons côte à côte (réutilise le style `pplx-card`) :
-- **Fichier .well-known** (icône `FileText`)
-- **DNS TXT record** (icône `Globe`)
-- **Meta tag HTML** (icône `Code`)
+### 2.2 Code blocks premium
+Custom renderer dans `ReactMarkdown` :
+- Header gris foncé avec langage détecté + bouton Copy
+- Police mono, padding propre
+- Couleurs syntaxe via `react-syntax-highlighter` (preset `oneDark` ou custom beige/dark)
+- Indispensable pour cyber (nginx confs, headers, SQL, payloads)
 
-Génération d'un token unique côté front : `obsidian-verify-${nanoid(24)}`. Stocké dans le state de la conversation.
+### 2.3 Édition messages user
+- Bouton "Edit" (icon `Pencil`) au hover des bulles user
+- Au clic → textarea inline avec Save / Cancel
+- Save → tronque les messages après celui-ci et regénère
+- Géré via `setMessages` du hook `useChat`
 
-### Étape 3 — Instructions + polling
+### 2.4 Attachements
+- Drag & drop sur le composer (zone visible avec overlay quand fichier survolé)
+- Bouton `+` ouvre file picker (images, PDF)
+- Preview en chips au-dessus du textarea (thumbnail + nom + X)
+- **MVP frontend-only** : images encodées base64 envoyées dans le `parts` du message (Gemini 3 Flash supporte vision via le Gateway)
+- PDF : extraction texte côté client avec `pdfjs-dist`, injecté comme contexte texte
 
-Selon la méthode choisie, on affiche une bulle assistant avec un bloc de code copiable :
-- DNS : `obsidian-verify=TOKEN` à mettre en record TXT à la racine
-- Meta : `<meta name="obsidian-verify" content="TOKEN" />`
-- Fichier : poser `TOKEN` dans `https://domaine/.well-known/obsidian-verify.txt`
+### 2.5 Slash commands
+- Quand l'input commence par `/` → menu autocomplete flottant au-dessus du composer
+- Commandes :
+  - `/diagnostic` → navigate vers `/diagnostic`
+  - `/cve <id>` → prompt template "Explique-moi la CVE-XXXX"
+  - `/scan <url>` → idem que diagnostic mais pré-rempli
+  - `/clear` → confirm + vide le thread courant
+  - `/export` → télécharge le thread en .md
+- Navigation flèches ↑↓, Enter pour valider, Esc pour fermer
 
-Chaque bloc a un bouton **Copier** (clipboard API) et un bouton **Vérifier maintenant**.
+### 2.6 Streaming polish
+- Remplacer "Thinking…" plat par un vrai shimmer (texte animé gradient) avec messages variés selon durée (`Réflexion…` → `Analyse en cours…` → `Compilation des sources…`)
+- Curseur clignotant `▍` qui suit le dernier caractère streamé (déjà partiellement via `.pplx-caret`)
+- Esc pour stop (en plus du bouton)
 
-Polling simulé : quand l'user clique "Vérifier", on lance un `setInterval` toutes les 5s qui appelle une fonction `checkVerification(domain, method, token)` factice. Pour la démo, elle retourne `true` après 10–15s (avec une chance d'échec aléatoire ~20% pour montrer le retry path). Pendant le polling, bulle animée *"Vérification en cours…"* avec le shimmer `pplx-caret`. **Note technique :** la vraie vérification réseau (DNS lookup, HTTP GET) viendra plus tard via une serverFn — l'interface front est déjà branchée.
+---
 
-Une fois validé → bulle ✓ verte discrète *"Domaine vérifié : monsite.ma"*.
+## P3 — différé (mentionné pour info, pas implémenté maintenant)
+- Settings page complète (theme, langue, modèle par défaut, reset)
+- Modale raccourcis clavier (`⌘/`)
+- Toasts globaux (sonner est probablement déjà dispo)
+- Greeting horaire + "Continue last conversation" sur landing
+- Citations/sources structurées
+- Branches (re-generations multiples)
+- Responsive mobile (sidebar drawer)
 
-### Étape 4 — Consentement légal
+---
 
-Bulle assistant + carte avec :
-- Texte légal : *"Je certifie être propriétaire du domaine `monsite.ma` ou disposer d'une autorisation écrite du propriétaire pour effectuer ce test de sécurité. Je comprends qu'un scan non autorisé peut constituer une infraction pénale dans ma juridiction."*
-- Checkbox `J'accepte les CGU et la politique d'usage responsable`
-- Bouton noir **Je confirme et je lance le scan** (désactivé tant que checkbox non cochée)
+## Fichiers touchés
 
-Au clic : on log dans `localStorage` (clé `obsidian:audit-trail`) un objet `{ domain, method, token, timestamp, userAgent, consentText }`. L'IP réelle nécessitera la serverFn plus tard — on note `ip: "pending-server-capture"` pour l'instant.
+**Créés :**
+- `src/components/ModelPicker.tsx`
+- `src/components/MessageActions.tsx`
+- `src/components/CodeBlock.tsx`
+- `src/components/SlashCommands.tsx`
+- `src/components/ThreadMenu.tsx` (3-dots par thread)
+- `src/components/UserMenu.tsx` (popover profil)
+- `src/components/AttachmentChips.tsx`
+- `src/lib/models.ts` (catalogue modèles)
+- `src/lib/preferences.ts` (localStorage prefs : model, sidebar, user)
 
-### Étape 5 — "Scan lancé"
+**Édités :**
+- `src/components/ChatView.tsx` (composer refait, message actions, slash commands, attachments)
+- `src/components/Sidebar.tsx` (collapse, 3-dots, user menu, suppression nav décorative)
+- `src/routes/api/chat.ts` (lit `model` du body)
+- `src/styles.css` (styles code blocks, shimmer, animations menu)
 
-Bulle assistant avec un faux stream :
-- *"✓ Domaine vérifié"*
-- *"✓ Consentement enregistré"*
-- *"Initialisation des agents…"* (avec spinner)
-- *"Web Recon agent : démarré"*, *"Network agent : démarré"*… (lignes qui apparaissent toutes les 800ms)
-- Après ~6s : *"Scan en cours. Les résultats arriveront dans Library quand l'analyse sera terminée."* + bouton **Voir un exemple de rapport**.
+**Dépendances ajoutées :**
+- `react-syntax-highlighter` + `@types/react-syntax-highlighter`
+- `pdfjs-dist` (extraction PDF côté client) — optionnel, peut être en P3 si trop lourd
 
-Input du bas remplacé par un bandeau gris : *"Scan en cours — tu peux fermer cette fenêtre."*
+---
 
-## 3. Persistance
+## Hors scope explicite
+- Auth / multi-user
+- Backend persistance (toujours localStorage)
+- Vraie computer-use Anthropic
+- Voice input réel (mic retiré, pas implémenté)
+- Mobile responsive (P3)
+- Settings page (P3)
 
-- `src/lib/diagnostic.ts` : types (`DiagnosticState`, `Step`, `VerificationMethod`, `AuditEntry`), helpers `loadDiagnostic()` / `saveDiagnostic()` / `appendAuditTrail()`.
-- État stocké sous `obsidian:diagnostic:current` (un seul diagnostic actif à la fois pour commencer).
-- Si l'user revient sur `/diagnostic` avec un état en cours → reprend à l'étape exacte.
+---
 
-## 4. Détails techniques (à zapper si non-tech)
-
-- Nouveau fichier route : `src/routes/diagnostic.tsx` (TanStack file route).
-- Nouveau composant : `src/components/DiagnosticFlow.tsx` qui contient la state machine (`useReducer`).
-- Nouveau composant : `src/components/VerificationCard.tsx` (méthodes + instructions + copy).
-- Nouveau composant : `src/components/ConsentCard.tsx`.
-- `src/lib/diagnostic.ts` pour la persistance localStorage.
-- Sidebar : ajout d'un item `Diagnostic` actif quand `pathname === "/diagnostic"`.
-- Index landing : ajout d'un bouton CTA *"Lancer un diagnostic"* en plus des cartes existantes — clic = `navigate("/diagnostic")`.
-- Aucun changement backend dans cette itération. Les TODOs sont laissés en commentaire (`// TODO: replace with serverFn calling DNS resolver / HTTP fetch`).
-
-## 5. Hors scope (à clarifier plus tard)
-
-- Vérification réelle (DNS lookup, HTTP GET) → nécessite serverFn + résolveur DNS Worker-compat
-- Blacklist domaines sensibles → liste à fournir
-- Rate limiting → backend
-- KYC / pièce d'identité → auth + storage (Lovable Cloud)
-- Audit trail persistant côté serveur (IP réelle) → DB
-- Génération réelle du rapport de scan
+Validation prévue après build :
+- Tous les boutons cliquables font quelque chose de visible
+- Changement de modèle fonctionne (vérif via `/api/chat` qui reçoit bien le nouveau model)
+- Copy / Regenerate / Edit OK sur un thread test
+- Slash menu apparaît au `/`
+- Collapse sidebar OK
