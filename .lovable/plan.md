@@ -1,49 +1,85 @@
-Voici ce que je propose pour rapprocher l'interface du niveau Claude/ChatGPT tout en respectant la discipline achromatique de Perplexity.
+Anatomie réelle de la sidebar Claude/ChatGPT — c'est ce qui manque actuellement.
 
-## 1. Typographie pro (le plus gros impact)
+## Ce qui les rend reconnaissables
 
-Remplacer la pile par défaut par une vraie police variable type "Söhne-like" :
-- **Inter Variable** (via `@fontsource-variable/inter`) chargé en local — c'est exactement la base utilisée par ChatGPT, et un substitut officiel de pplxSans listé dans le brief.
-- Activer les *features* OpenType : `font-feature-settings: "cv11", "ss01", "ss03"` + `font-optical-sizing: auto` → rendu beaucoup plus net, proche de Söhne.
-- `letter-spacing: -0.011em` sur le corps, `-0.025em` sur le wordmark (les gros titres respirent mieux serrés).
-- Wordmark `perplexity` passé en `font-weight: 450` (entre 400 et 500) via axe variable pour un trait plus présent sans tomber dans le medium.
-- `-webkit-font-smoothing: antialiased` + `text-rendering: optimizeLegibility` déjà OK, on ajoute `font-synthesis: none`.
+1. **Densité serrée** : items à 32–34px de hauteur (pas 40), texte 13–14px, padding horizontal 8–10px → beaucoup plus d'air vertical.
+2. **Header sticky** avec logo + bouton "New chat" full-width juste en dessous (l'action principale, toujours visible).
+3. **Section "Chats" / "History"** avec titre minuscule en uppercase tracking large (`12px`, `font-weight: 500`, `letter-spacing: 0.04em`, couleur smoke) — c'est LA signature visuelle.
+4. **Historique groupé par date** : "Today", "Yesterday", "Previous 7 days", "Previous 30 days" — chaque groupe a son micro-titre.
+5. **Items historique** : juste du texte tronqué (`text-overflow: ellipsis`, `white-space: nowrap`), pas d'icône, hover background `#f1efea`, action menu `⋯` qui apparaît seulement au hover.
+6. **Footer utilisateur** sticky en bas : avatar rond + nom + plan ("Free") + `⋯`. Sépare nettement la session du contenu.
+7. **Scroll interne** : seule la zone historique scrolle, header et footer restent fixes.
 
-## 2. Bouton sombre en haut à droite
+## Typographie spécifique
 
-Ajouter une **barre supérieure flottante** dans le main (pas de bordure, juste position absolue top-right, 16px de marge) contenant :
-- Un bouton **"Sign up"** : pilule noire `#000000`, texte crème `#faf8f5`, 14px medium, padding `8px 16px`, hover → léger fade vers `#1a1a1a`.
-- Un bouton ghost **"Log in"** à sa gauche : transparent, texte ink, hover background `#ece9e2`.
+- **Items nav principaux** : `13px`, `font-weight: 500`, `letter-spacing: -0.006em`, line-height 1
+- **Titres de section** ("Chats", "Today") : `11px`, `font-weight: 500`, `letter-spacing: 0.04em`, `text-transform: uppercase`, couleur `#92918b`
+- **Items historique** : `13px`, `font-weight: 400`, couleur `#27251e`, tronqué
+- **Footer user** : nom `13px / 500`, plan `12px / 400 / #72706b`
+- **Bouton New chat** : `13px / 500`
 
-Cohérent avec la règle "le noir est l'action principale" — on garde le submit button rond comme seul autre élément noir.
+→ La hiérarchie repose sur **weight + uppercase**, pas sur la taille.
 
-## 3. Animations subtiles (jamais tape-à-l'œil)
+## Composants à ajouter
 
-Niveau Claude/Linear : tout en `cubic-bezier(0.16, 1, 0.3, 1)` (ease-out doux), durées courtes.
+1. **Header sticky** (top, non-scrollable)
+   - Logo dot + "perplexity" en wordmark 14px
+   - Bouton collapse `⇤` à droite (icône `PanelLeftClose`)
 
-- **Entrée page** : wordmark fade-in + slide-up 8px (400ms), input fade-in delay 100ms, cards fade-in en cascade (stagger 60ms par carte) via `animation-delay`.
-- **Wordmark** : très léger `letter-spacing` animé au mount (de `-0.01em` à `-0.025em` sur 600ms) — effet "respiration" élégant.
-- **Input focus** : border passe de `#ece9e2` à `#27251e` en 200ms, très subtil `box-shadow: 0 0 0 3px rgba(39,37,30,0.04)` (entorse contrôlée à la règle "pas d'ombre" — seulement sur focus, glow papier).
-- **Nav items hover** : background `#ece9e2` fade-in 150ms.
-- **Cards suggestions** : `translateY(-2px)` au hover en 200ms + border qui passe de `#ece9e2` à `#d4d2cc`.
-- **Submit button** : scale `1 → 0.96` au active, hover scale `1.05`.
-- **Curseur clignotant** custom dans le textarea (optionnel, signature Claude).
+2. **Bouton "New Thread"** full-width juste sous le header
+   - 32px de haut, bordure 1px `#ece9e2`, radius 8px, icône `+` à gauche, raccourci `⌘K` à droite en `#92918b 11px`
+   - Style identique à ChatGPT "New chat"
 
-## 4. Détails finition
+3. **Search compact** (déjà là, à affiner)
+   - Pas de fond visible par défaut, juste l'icône + placeholder, fond au focus
 
-- Largeur sidebar : passer à `260px` strict avec padding interne `12px` (actuellement 16) — plus aéré comme ChatGPT.
-- Wordmark sidebar : retirer (doublon avec le hero) OU le remplacer par un petit dot logo 24px.
-- Search sidebar : retirer la bordure visible, fond `#f1efea`, focus seulement → look Notion/Claude.
-- Espacement input ↔ cards : passer de 32px à 40px pour respirer.
-- Footer discret en bas du main : "Perplexity may produce inaccurate information" en `#92918b` 12px (signature ChatGPT/Claude).
+4. **Nav principale** (Discover, Spaces, Library) — section sans titre, items 32px
+
+5. **Section "CHATS"** (titre uppercase)
+   - Sous-groupes par date avec mini-titres "Today", "Yesterday"
+   - 6–8 threads exemples ("Quantum computing basics", "React 19 use() hook", "Trip to Lisbon", "TypeScript generics", "Climate report 2024", etc.)
+   - Hover : background + `⋯` qui fade-in à droite
+
+6. **Footer user sticky** (bottom)
+   - Séparateur `1px #ece9e2` au-dessus
+   - Avatar 24px rond avec initiale, nom "Antoine", sous-texte "Free plan", icône `⋯` à droite
+   - Hover : background `#f1efea`
+
+## Layout
+
+```
+┌─────────────────────┐
+│ ● perplexity     ⇤  │  ← header sticky (52px)
+├─────────────────────┤
+│ + New Thread   ⌘K   │  ← bouton primaire (40px)
+│ 🔍 Search           │  ← search (36px)
+├─────────────────────┤  
+│  Discover           │  ← nav principale (sans titre)
+│  Spaces             │
+│  Library            │
+│                     │
+│  CHATS              │  ← titre uppercase
+│  ─ Today ─          │
+│  Quantum computing  │  ← scroll zone
+│  React 19 hooks     │
+│  ─ Yesterday ─      │
+│  Trip to Lisbon     │
+│  ...                │
+├─────────────────────┤
+│ ⓐ Antoine     ⋯     │  ← footer sticky (52px)
+│   Free plan         │
+└─────────────────────┘
+```
 
 ## Détails techniques
 
-- Ajouter `@fontsource-variable/inter` via bun
-- Import dans `src/styles.css` : `@import "@fontsource-variable/inter";`
-- Variable `--font-sans: "Inter Variable", ...`
-- Keyframes définis dans `styles.css` (fade-in-up, breathe)
-- Animations appliquées par classes inline-style avec `animationDelay` calculé pour le stagger
-- Aucune nouvelle dépendance d'animation (pas besoin de framer-motion pour ce niveau de subtilité)
+- Largeur sidebar : passer à 264px (standard Claude)
+- Padding interne : 8px horizontal, items à 8px padding interne (= 16px d'inset visuel via le padding du conteneur + de l'item)
+- `flex` column avec header/footer `shrink-0` et zone middle `flex-1 overflow-y-auto`
+- Scrollbar custom fine : `width: 6px`, thumb `#d4d2cc`, transparente au repos, visible au hover de la sidebar
+- Tooltip raccourci `⌘K` sur "New Thread" (composant Tooltip shadcn déjà installé)
+- Action `⋯` sur items historique : `opacity-0 group-hover:opacity-100` avec transition 150ms
+- Aucune ombre, aucune bordure verticale séparant sidebar/main (règle Perplexity respectée)
+- Inter Variable déjà chargé → on en profite avec font-features pour les chiffres tabulaires sur raccourcis (`font-variant-numeric: tabular-nums`)
 
-Tout reste 100% achromatique, monochrome, conforme au brief Perplexity.
+Résultat : densité + hiérarchie typo claire + zones sticky = sensation Claude/ChatGPT immédiate.
