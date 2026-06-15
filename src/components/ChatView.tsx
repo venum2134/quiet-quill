@@ -20,7 +20,7 @@ import { useSelectedModel, useFeedback } from "@/lib/preferences";
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
-import { fadeIn, fadeInUp, popIn, staggerContainer, easeOut, springSnappy } from "@/lib/motion";
+import { fadeIn, fadeInUp, staggerContainer, easeOut, springSnappy } from "@/lib/motion";
 
 const suggestions = [
   { icon: Globe, label: "Expliquer une CVE", prompt: "Explique-moi la CVE-2024-3094 (xz-utils) et ses implications." },
