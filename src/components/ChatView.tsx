@@ -182,7 +182,8 @@ function MessageBubble({
             <Pencil size={11} strokeWidth={1.7} /> Modifier
           </button>
         </div>
-      </div>
+      </motion.div>
+
     );
   }
 
