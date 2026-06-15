@@ -276,16 +276,27 @@ export function DiagnosticFlow() {
       {/* Scrollable bubbles */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 80 }}>
         <div className="mx-auto flex flex-col gap-5 px-6 pb-8" style={{ maxWidth: 760 }}>
-          {state.bubbles.map((b) => (
-            <BubbleView
-              key={b.id}
-              bubble={b}
-              onPickMethod={handlePickMethod}
-              onVerify={handleVerify}
-              onConsent={handleConsent}
-              step={state.step}
-            />
-          ))}
+          <AnimatePresence initial={false}>
+            {state.bubbles.map((b) => (
+              <motion.div
+                key={b.id}
+                layout
+                variants={fadeInUp}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+              >
+                <BubbleView
+                  bubble={b}
+                  onPickMethod={handlePickMethod}
+                  onVerify={handleVerify}
+                  onConsent={handleConsent}
+                  step={state.step}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
         </div>
       </div>
 
