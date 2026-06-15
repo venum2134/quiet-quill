@@ -154,7 +154,8 @@ function MessageBubble({
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
+
       );
     }
     return (
