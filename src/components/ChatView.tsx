@@ -10,11 +10,11 @@ import {
 import { deriveTitle, getThread, saveThread } from "@/lib/threads";
 
 const suggestions = [
-  { icon: Sparkles, label: "Try Computer", prompt: "What can you help me with?" },
-  { icon: Globe, label: "Research a topic", prompt: "Give me an overview of quantum computing." },
-  { icon: BookOpen, label: "Summarize a paper", prompt: "Summarize the key ideas of the transformer architecture." },
-  { icon: LineChart, label: "Analyze markets", prompt: "What are the main drivers of the S&P 500 right now?" },
-  { icon: ImageIcon, label: "Generate ideas", prompt: "Give me 5 creative weekend project ideas." },
+  { icon: Globe, label: "Expliquer une CVE", prompt: "Explique-moi la CVE-2024-3094 (xz-utils) et ses implications." },
+  { icon: BookOpen, label: "OWASP Top 10", prompt: "Résume l'OWASP Top 10 2021 avec un exemple concret pour chaque risque." },
+  { icon: LineChart, label: "Analyser un header HTTP", prompt: "Quels headers de sécurité dois-je activer sur un site WordPress en prod ?" },
+  { icon: Sparkles, label: "Auditer WordPress", prompt: "Donne-moi une checklist d'audit sécurité pour un site WordPress mutualisé." },
+  { icon: ImageIcon, label: "Threat modeling", prompt: "Aide-moi à faire un threat model STRIDE pour une API REST de paiement." },
 ];
 
 const transport = new DefaultChatTransport({ api: "/api/chat" });
@@ -114,7 +114,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={onKeyDown}
-        placeholder={isEmpty ? "Type @ for connectors and sources" : "Ask a follow-up…"}
+        placeholder={isEmpty ? "Pose une question cybersécurité, ou tape /diagnostic" : "Ask a follow-up…"}
         rows={isEmpty ? 2 : 1}
         className="w-full resize-none bg-transparent outline-none placeholder:text-[#92918b]"
         style={{ fontSize: 16, color: "#27251e", lineHeight: 1.5, border: "none", maxHeight: 200 }}
