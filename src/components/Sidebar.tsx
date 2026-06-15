@@ -125,10 +125,15 @@ export function Sidebar() {
 
   /* ---------- Expanded sidebar ---------- */
   return (
-    <aside
-      className="pplx-fade-in fixed left-0 top-0 flex h-screen flex-col"
-      style={{ width: 264, backgroundColor: "#faf8f5" }}
+    <motion.aside
+      layout
+      initial={false}
+      animate={{ width: 264 }}
+      transition={springSoft}
+      className="fixed left-0 top-0 flex h-screen flex-col"
+      style={{ backgroundColor: "#faf8f5", overflow: "hidden" }}
     >
+
       <div className="flex shrink-0 items-center justify-between px-3" style={{ height: 52 }}>
         <div className="flex items-center gap-2">
           <div style={{
