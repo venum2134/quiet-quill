@@ -5,6 +5,7 @@ export type Thread = {
   title: string;
   updatedAt: number;
   messages: UIMessage[];
+  pinned?: boolean;
 };
 
 const KEY = "perplexity-threads";
@@ -44,8 +45,60 @@ export function deleteThread(id: string) {
   persist(loadThreads().filter((t) => t.id !== id));
 }
 
+export function deleteAllThreads() {
+  persist([]);
+}
+
 export function getThread(id: string): Thread | null {
   return loadThreads().find((t) => t.id === id) ?? null;
+}
+
+export function renameThread(id: string, title: string) {
+  const all = loadThreads();
+  const t = all.find((x) => x.id === id);
+  if (!t) return;
+  t.title = title.trim() || "New Thread";
+  persist(all);
+}
+
+export function togglePin(id: string) {
+  const all = loadThreads();
+  const t = all.find((x) => x.id === id);
+  if (!t) return;
+  t.pinned = !t.pinned;
+  persist(all);
+}
+
+export function exportThreadMarkdown(t: Thread): string {
+  const lines = [`# ${t.title}`, ""];
+  for (const m of t.messages) {
+    const role = m.role === "user" ? "**You**" : "**Obsidian**";
+    const text = m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
+    lines.push(role, "", text, "", "---", "");
+  }
+  return lines.join("\n");
+}
+
+export function downloadAllThreadsJSON() {
+  if (!isBrowser()) return;
+  const blob = new Blob([JSON.stringify(loadThreads(), null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `obsidian-threads-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export function downloadThreadMarkdown(t: Thread) {
+  if (!isBrowser()) return;
+  const blob = new Blob([exportThreadMarkdown(t)], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${t.title.replace(/[^a-z0-9-_]+/gi, "-").slice(0, 40) || "thread"}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function createThread(): Thread {
