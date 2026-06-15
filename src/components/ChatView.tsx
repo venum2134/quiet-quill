@@ -557,7 +557,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 <motion.div
                   initial="hidden"
                   animate="show"
-                  variants={staggerContainer(0.04)}
+                  variants={staggerContainer}
                   onMouseLeave={() => setHoveredModel(null)}
                 >
                   {MODELS.map((m) => {
