@@ -246,7 +246,8 @@ function MessageBubble({
           </span>
         )}
       </div>
-    </div>
+    </motion.div>
+
   );
 }
 
