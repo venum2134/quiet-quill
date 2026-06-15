@@ -90,7 +90,7 @@ export function Sidebar() {
   /* ---------- Collapsed sidebar ---------- */
   if (collapsed) {
     return (
-      <aside className="pplx-fade-in fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ width: 56, backgroundColor: "#faf8f5", borderRight: "1px solid #ece9e2" }}>
+      <motion.aside layout initial={false} animate={{ width: 56 }} transition={springSoft} className="fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ backgroundColor: "#faf8f5", borderRight: "1px solid #ece9e2", overflow: "hidden" }}>
         <button
           onClick={() => setCollapsed(false)}
           className="pplx-side-item flex items-center justify-center"
