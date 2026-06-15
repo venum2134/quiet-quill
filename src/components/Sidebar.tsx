@@ -156,17 +156,21 @@ export function Sidebar() {
       </div>
 
       <div className="flex shrink-0 flex-col gap-1 px-2 pb-2">
-        <button
+        <motion.button
+          whileHover={{ y: -1, backgroundColor: "#f1efea" }}
+          whileTap={{ scale: 0.98 }}
+          transition={springSnappy}
           onClick={handleNew}
-          className="pplx-side-item flex items-center justify-between px-2"
-          style={{ height: 36, borderRadius: 8, border: "1px solid #ece9e2", background: "#faf8f5" }}
+          className="flex items-center justify-between px-2"
+          style={{ height: 36, borderRadius: 8, border: "1px solid #ece9e2", background: "#faf8f5", cursor: "pointer" }}
         >
           <div className="flex items-center gap-2.5">
             <SquarePen size={15} strokeWidth={1.6} style={{ color: "#27251e" }} />
             <span style={{ fontSize: 13, color: "#27251e", fontWeight: 500 }}>New Thread</span>
           </div>
           <span className="pplx-kbd">⌘K</span>
-        </button>
+        </motion.button>
+
 
         <div className="relative">
           <Search size={14} strokeWidth={1.6} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "#92918b" }} />
