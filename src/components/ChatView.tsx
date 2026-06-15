@@ -134,8 +134,9 @@ function MessageBubble({
   if (message.role === "user") {
     if (editing) {
       return (
-        <div className="flex justify-end pplx-fade-in">
+        <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="flex justify-end">
           <div style={{ maxWidth: "85%", width: "100%", background: "#f1efea", borderRadius: 16, padding: 12 }}>
+
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
