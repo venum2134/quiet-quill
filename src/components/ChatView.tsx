@@ -5,6 +5,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight, Plus, Globe, BookOpen, LineChart, Image as ImageIcon, Sparkles,
   Square, ShieldCheck, Check, ChevronDown, Copy, RefreshCw, ThumbsUp, ThumbsDown,
@@ -19,6 +20,7 @@ import { useSelectedModel, useFeedback } from "@/lib/preferences";
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
+import { fadeIn, fadeInUp, popIn, staggerContainer, easeOut, springSnappy } from "@/lib/motion";
 
 const suggestions = [
   { icon: Globe, label: "Expliquer une CVE", prompt: "Explique-moi la CVE-2024-3094 (xz-utils) et ses implications." },
