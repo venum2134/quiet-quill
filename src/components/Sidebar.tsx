@@ -243,7 +243,7 @@ export function Sidebar() {
       <div className="shrink-0 px-2 pb-2 pt-2" style={{ borderTop: "1px solid #ece9e2" }}>
         <UserMenu />
       </div>
-    </aside>
+    </motion.aside>
   );
 }
 
