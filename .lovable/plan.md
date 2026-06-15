@@ -1,149 +1,67 @@
-# Plan — Obsidian UI upgrade (P1 + P2)
+# Plan — Animations premium avec Framer Motion
 
-Objectif : éliminer tous les boutons décoratifs et amener le chat au niveau Claude/ChatGPT/Perplexity. Tout reste 100% frontend (localStorage), design beige actuel préservé. Aucune nouvelle dépendance backend.
+Objectif : ajouter des micro-animations subtiles et cohérentes (style Claude / Linear) sans casser l'UI actuelle. Rien d'extravagant, juste du polish partout où ça compte.
 
----
+## Setup
 
-## P1 — Tuer les boutons morts
+- Installer `framer-motion` (`bun add framer-motion`).
+- Créer `src/lib/motion.ts` avec des presets réutilisables :
+  - `fadeInUp` (opacity + y:8 → 0, 0.25s ease-out)
+  - `fadeIn` (0.2s)
+  - `popIn` (scale 0.96 → 1 + opacity)
+  - `staggerContainer` (delayChildren 0.04, staggerChildren 0.03)
+  - transitions : `spring` doux (stiffness 260, damping 26) et `ease` (`[0.16, 1, 0.3, 1]`)
+- Respect de `prefers-reduced-motion` via `useReducedMotion` → durations à 0.
 
-### 1.1 Sélecteur de modèle réel (composer)
-- Remplacer le pill `Gemini 3 Flash ▾` statique par un **vrai dropdown** (Popover shadcn) avec 4 modèles via l'AI Gateway :
-  - `google/gemini-3-flash-preview` — "Rapide · défaut"
-  - `google/gemini-3-pro-preview` — "Raisonnement profond"
-  - `anthropic/claude-sonnet-4.5` — "Analyse experte"
-  - `openai/gpt-5` — "Polyvalent"
-- Stocké dans `localStorage` (`obsidian:model`), envoyé via `body` du `useChat` transport.
-- API route `/api/chat` lit `model` du body au lieu du hardcode.
-- Chaque entrée du menu : nom + 1 ligne de description + checkmark sur le sélectionné.
+## ChatView
 
-### 1.2 Menu user (bas sidebar)
-- Popover sur le bouton profil "Antoine / Free plan" :
-  - Settings (ouvre `/settings`)
-  - Keyboard shortcuts (ouvre modale `⌘/`)
-  - Effacer toutes les conversations (avec confirm)
-  - Export JSON de tous les threads
-- Pseudo + plan éditables dans `/settings` (localStorage `obsidian:user`).
+- **Messages** : `AnimatePresence` + `motion.div` sur chaque bubble avec `fadeInUp`. Stagger léger sur le premier render d'un thread.
+- **Streaming caret** : remplacer le `▍` CSS par un `motion.span` qui pulse (opacity 1↔0.3, 0.8s loop).
+- **Shimmer "Thinking…"** : déjà présent → ajouter un `motion.div` qui fade-in à l'apparition.
+- **Action bar (Copy / Regenerate / TTS / 👍👎)** : `AnimatePresence` au hover du message (`whileHover` parent), boutons en `fadeIn` + translate-y 4px.
+- **Toast feedback** (copy, like) : petit `popIn` (déjà géré par shadcn `sonner`, on laisse).
+- **Composer** :
+  - Focus ring : `motion` sur le border avec `layout` transition.
+  - Attachments chips : `AnimatePresence` `popIn` + exit `scale 0.9 + fade`.
+  - Send button : `whileTap scale 0.94`, `whileHover scale 1.04`.
+- **Slash command menu** : `AnimatePresence` `fadeInUp` (y:4) + stagger items.
+- **Model picker popover** : `popIn` (déjà via Radix, on laisse — sinon override).
+- **Empty state** : suggestions cards en `staggerContainer` à l'arrivée, `whileHover { y: -2 }`.
 
-### 1.3 Menu 3-dots par thread (sidebar)
-- Remplacer le `Trash2` direct par un `MoreHorizontal` qui ouvre un Popover :
-  - Renommer (inline edit du titre)
-  - Pin / Unpin (nouvelle section "Pinned" en haut de la liste)
-  - Exporter (Markdown)
-  - Supprimer (avec confirm toast)
-- Hover-only sur desktop, toujours visible si actif.
+## Sidebar
 
-### 1.4 Toggle sidebar fonctionnel
-- Bouton `PanelLeftClose` → collapse à 56px (icônes only).
-- État dans `localStorage` (`obsidian:sidebar`).
-- En collapsed : logo, New, Diagnostic, profil restent visibles en icônes. Threads cachés. Raccourci `⌘\`.
-- Quand collapsed, un mini bouton "expand" flotte sur le bord.
+- **Collapse/expand** : `motion.aside` avec `animate={{ width }}` + spring → transition fluide entre 56px et 280px (au lieu du `transition-all` CSS actuel).
+- **Thread list** : `AnimatePresence` sur chaque thread (entry `fadeInUp`, exit `fade + height 0` quand delete → effet "slide out").
+- **Pinned section** : `motion` height auto quand on pin/unpin (`layout` prop).
+- **Active thread indicator** : `layoutId="activeThread"` sur la barre/fond actif → glissement entre threads.
+- **New chat button** : `whileTap`, `whileHover` subtils.
+- **Search input** : expand width au focus (optional, petit détail).
 
-### 1.5 Items nav décoratifs
-- Supprimer `Discover`, `Spaces`, `Library` du sidebar (pas de roadmap pour eux).
-- Garder uniquement `Diagnostic`. Ajouter `Settings` en bas.
+## Diagnostic flow
 
-### 1.6 Bouton Mic + Computer
-- Mic : retirer (pas de roadmap voice court terme), ou l'implémenter avec `webkitSpeechRecognition`. **Décision : retirer** pour éviter un faux feature.
-- `Computer` pill : retirer (concept Anthropic computer-use non implémenté).
+- **Step transitions** : `AnimatePresence mode="wait"` entre étapes, `fadeInUp`.
+- **Progress bar** : `motion.div` avec `animate={{ width: '${pct}%' }}` + spring.
+- **Method choice buttons** : stagger entry + `whileHover { scale: 1.02, y: -2 }`.
+- **Polling status** : pulse dot animé (scale 1↔1.3, opacity loop).
+- **Success check** : `popIn` avec spring bouncy quand token détecté.
 
----
+## Page transitions (routes)
 
-## P2 — Features chat premium
+- Dans `__root.tsx` : wrapper `<AnimatePresence mode="wait">` autour de `<Outlet />` avec key = pathname → fade subtil (0.15s) entre pages.
 
-### 2.1 Barre d'actions sous chaque réponse assistant
-Apparait au hover du message :
-- **Copy** (copie le markdown brut → toast "Copié")
-- **Regenerate** (rejoue le dernier user message, supprime la réponse actuelle)
-- **Thumbs up / down** (stocké localement, `obsidian:feedback`)
-- **Read aloud** (Web Speech API `speechSynthesis`)
-- Footer discret : nom du modèle utilisé + durée de génération (timer entre `submitted` et `ready`)
+## Détails globaux
 
-### 2.2 Code blocks premium
-Custom renderer dans `ReactMarkdown` :
-- Header gris foncé avec langage détecté + bouton Copy
-- Police mono, padding propre
-- Couleurs syntaxe via `react-syntax-highlighter` (preset `oneDark` ou custom beige/dark)
-- Indispensable pour cyber (nginx confs, headers, SQL, payloads)
+- **Buttons** (variant primary) : ajouter `whileTap={{ scale: 0.97 }}` via un wrapper `MotionButton` ou directement.
+- **Popovers / dropdowns** : Radix gère déjà via `data-state`; on ajoute juste des keyframes CSS `scale-in` + `fade-in` dans `styles.css` si pas déjà là.
+- **Toaster (sonner)** : laisser tel quel.
 
-### 2.3 Édition messages user
-- Bouton "Edit" (icon `Pencil`) au hover des bulles user
-- Au clic → textarea inline avec Save / Cancel
-- Save → tronque les messages après celui-ci et regénère
-- Géré via `setMessages` du hook `useChat`
+## Fichiers
 
-### 2.4 Attachements
-- Drag & drop sur le composer (zone visible avec overlay quand fichier survolé)
-- Bouton `+` ouvre file picker (images, PDF)
-- Preview en chips au-dessus du textarea (thumbnail + nom + X)
-- **MVP frontend-only** : images encodées base64 envoyées dans le `parts` du message (Gemini 3 Flash supporte vision via le Gateway)
-- PDF : extraction texte côté client avec `pdfjs-dist`, injecté comme contexte texte
+- **Créés** : `src/lib/motion.ts`
+- **Édités** : `src/components/ChatView.tsx`, `src/components/Sidebar.tsx`, `src/components/DiagnosticFlow.tsx`, `src/routes/__root.tsx`, `src/styles.css` (keyframes d'appoint), `package.json` (`framer-motion`).
 
-### 2.5 Slash commands
-- Quand l'input commence par `/` → menu autocomplete flottant au-dessus du composer
-- Commandes :
-  - `/diagnostic` → navigate vers `/diagnostic`
-  - `/cve <id>` → prompt template "Explique-moi la CVE-XXXX"
-  - `/scan <url>` → idem que diagnostic mais pré-rempli
-  - `/clear` → confirm + vide le thread courant
-  - `/export` → télécharge le thread en .md
-- Navigation flèches ↑↓, Enter pour valider, Esc pour fermer
+## Hors scope
 
-### 2.6 Streaming polish
-- Remplacer "Thinking…" plat par un vrai shimmer (texte animé gradient) avec messages variés selon durée (`Réflexion…` → `Analyse en cours…` → `Compilation des sources…`)
-- Curseur clignotant `▍` qui suit le dernier caractère streamé (déjà partiellement via `.pplx-caret`)
-- Esc pour stop (en plus du bouton)
-
----
-
-## P3 — différé (mentionné pour info, pas implémenté maintenant)
-- Settings page complète (theme, langue, modèle par défaut, reset)
-- Modale raccourcis clavier (`⌘/`)
-- Toasts globaux (sonner est probablement déjà dispo)
-- Greeting horaire + "Continue last conversation" sur landing
-- Citations/sources structurées
-- Branches (re-generations multiples)
-- Responsive mobile (sidebar drawer)
-
----
-
-## Fichiers touchés
-
-**Créés :**
-- `src/components/ModelPicker.tsx`
-- `src/components/MessageActions.tsx`
-- `src/components/CodeBlock.tsx`
-- `src/components/SlashCommands.tsx`
-- `src/components/ThreadMenu.tsx` (3-dots par thread)
-- `src/components/UserMenu.tsx` (popover profil)
-- `src/components/AttachmentChips.tsx`
-- `src/lib/models.ts` (catalogue modèles)
-- `src/lib/preferences.ts` (localStorage prefs : model, sidebar, user)
-
-**Édités :**
-- `src/components/ChatView.tsx` (composer refait, message actions, slash commands, attachments)
-- `src/components/Sidebar.tsx` (collapse, 3-dots, user menu, suppression nav décorative)
-- `src/routes/api/chat.ts` (lit `model` du body)
-- `src/styles.css` (styles code blocks, shimmer, animations menu)
-
-**Dépendances ajoutées :**
-- `react-syntax-highlighter` + `@types/react-syntax-highlighter`
-- `pdfjs-dist` (extraction PDF côté client) — optionnel, peut être en P3 si trop lourd
-
----
-
-## Hors scope explicite
-- Auth / multi-user
-- Backend persistance (toujours localStorage)
-- Vraie computer-use Anthropic
-- Voice input réel (mic retiré, pas implémenté)
-- Mobile responsive (P3)
-- Settings page (P3)
-
----
-
-Validation prévue après build :
-- Tous les boutons cliquables font quelque chose de visible
-- Changement de modèle fonctionne (vérif via `/api/chat` qui reçoit bien le nouveau model)
-- Copy / Regenerate / Edit OK sur un thread test
-- Slash menu apparaît au `/`
-- Collapse sidebar OK
+- Pas de refonte visuelle, pas de nouvelles features, pas de page Settings.
+- Pas d'animations lourdes (Lottie, 3D, parallax).
+- Pas de changement de logique métier.
