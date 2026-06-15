@@ -353,8 +353,10 @@ function ThreadRow({
           </PopoverContent>
         </Popover>
       )}
-    </div>
+      </div>
+    </motion.div>
   );
+
 }
 
 function MenuItem({ icon: Icon, label, onClick, danger }: { icon: typeof Pin; label: string; onClick: () => void; danger?: boolean }) {
