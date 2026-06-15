@@ -18,7 +18,9 @@ const mainNav = [
 export function Sidebar() {
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { threadId?: string };
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const activeId = params.threadId;
+  const onDiagnostic = pathname === "/diagnostic";
   const [threads, setThreads] = useState<Thread[]>([]);
   const [filter, setFilter] = useState("");
 
@@ -117,6 +119,26 @@ export function Sidebar() {
 
       <div className="pplx-sidebar-scroll flex-1 overflow-y-auto px-2 pb-2">
         <nav className="flex flex-col gap-0.5 pb-3">
+          <Link
+            to="/diagnostic"
+            className="pplx-side-item flex w-full items-center gap-2.5 px-2 text-left"
+            style={{
+              height: 32, borderRadius: 6, color: "#27251e", fontSize: 13,
+              fontWeight: onDiagnostic ? 600 : 500, letterSpacing: "-0.006em",
+              background: onDiagnostic ? "#ece9e2" : "transparent",
+            }}
+          >
+            <ShieldCheck size={16} strokeWidth={1.7} style={{ color: "#27251e" }} />
+            <span>Diagnostic</span>
+            <span
+              style={{
+                marginLeft: "auto", fontSize: 9, fontWeight: 600, padding: "2px 6px",
+                borderRadius: 4, background: "#27251e", color: "#faf8f5", letterSpacing: "0.04em",
+              }}
+            >
+              NEW
+            </span>
+          </Link>
           {mainNav.map((item) => (
             <button
               key={item.label}
