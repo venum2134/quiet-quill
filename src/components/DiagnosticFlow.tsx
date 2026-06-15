@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight, ShieldCheck, Globe, FileText, Code as CodeIcon, Copy, Check,
   Loader2, RefreshCw, AlertTriangle, Sparkles,
@@ -8,6 +9,7 @@ import {
   loadDiagnostic, makeToken, newBubble, normalizeDomain, resetDiagnostic, saveDiagnostic,
   type DiagnosticState, type VerificationMethod, type ChatBubble,
 } from "@/lib/diagnostic";
+import { fadeInUp, springSnappy, easeOut } from "@/lib/motion";
 
 type Action =
   | { type: "hydrate"; state: DiagnosticState }
@@ -274,16 +276,27 @@ export function DiagnosticFlow() {
       {/* Scrollable bubbles */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 80 }}>
         <div className="mx-auto flex flex-col gap-5 px-6 pb-8" style={{ maxWidth: 760 }}>
-          {state.bubbles.map((b) => (
-            <BubbleView
-              key={b.id}
-              bubble={b}
-              onPickMethod={handlePickMethod}
-              onVerify={handleVerify}
-              onConsent={handleConsent}
-              step={state.step}
-            />
-          ))}
+          <AnimatePresence initial={false}>
+            {state.bubbles.map((b) => (
+              <motion.div
+                key={b.id}
+                layout
+                variants={fadeInUp}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+              >
+                <BubbleView
+                  bubble={b}
+                  onPickMethod={handlePickMethod}
+                  onVerify={handleVerify}
+                  onConsent={handleConsent}
+                  step={state.step}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
         </div>
       </div>
 
@@ -450,13 +463,22 @@ function MethodPicker({ onPick, disabled }: { onPick: (m: VerificationMethod) =>
     { method: "meta", label: "Meta tag HTML", desc: "Insère une balise dans le <head>.", icon: CodeIcon },
   ];
   return (
-    <div className="pplx-fade-in grid grid-cols-3 gap-2">
-      {opts.map((o) => (
-        <button
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+      className="grid grid-cols-3 gap-2"
+    >
+      {opts.map((o, i) => (
+        <motion.button
           key={o.method}
+          variants={fadeInUp}
+          whileHover={disabled ? undefined : { y: -3, borderColor: "#27251e" }}
+          whileTap={disabled ? undefined : { scale: 0.97 }}
+          transition={springSnappy}
           onClick={() => !disabled && onPick(o.method)}
           disabled={disabled}
-          className="pplx-card flex flex-col gap-2 p-3 text-left"
+          className="flex flex-col gap-2 p-3 text-left"
           style={{
             borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2",
             cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.6 : 1,
@@ -467,11 +489,14 @@ function MethodPicker({ onPick, disabled }: { onPick: (m: VerificationMethod) =>
             <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e" }}>{o.label}</span>
           </div>
           <span style={{ fontSize: 11, color: "#72706b", lineHeight: 1.4 }}>{o.desc}</span>
-        </button>
+          {/* keep i unused warning quiet via noop */}
+          <span hidden>{i}</span>
+        </motion.button>
       ))}
-    </div>
+    </motion.div>
   );
 }
+
 
 function VerificationCard({
   domain, method, token, onVerify, disabled,
@@ -611,11 +636,24 @@ function ScanProgress({ lines, done }: { lines: string[]; done: boolean }) {
       <div className="flex flex-col gap-1 font-mono" style={{ fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace', fontSize: 12.5, lineHeight: 1.6 }}>
         <div style={{ color: "#72706b" }}>$ obsidian scan --consent verified</div>
         {lines.map((l, i) => (
-          <div key={i} className="pplx-fade-in" style={{ color: "#27251e" }}>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.25, ease: easeOut }}
+            style={{ color: "#27251e" }}
+          >
             <span style={{ color: "#92918b" }}>›</span> {l}
-          </div>
+          </motion.div>
         ))}
-        {!done && <div style={{ color: "#92918b" }}>…</div>}
+        {!done && (
+          <motion.div
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ color: "#92918b" }}
+          >…</motion.div>
+        )}
+
       </div>
       {done && (
         <p style={{ fontSize: 13, color: "#27251e", margin: 0 }}>

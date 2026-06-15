@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Search, PanelLeftClose, PanelLeftOpen, SquarePen, MoreHorizontal,
   ShieldCheck, Settings, LogOut, Download, Trash2, Pin, PinOff, Pencil, FileDown,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/threads";
 import { useSidebarCollapsed } from "@/lib/preferences";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { springSoft, springSnappy, easeOut } from "@/lib/motion";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -88,7 +90,7 @@ export function Sidebar() {
   /* ---------- Collapsed sidebar ---------- */
   if (collapsed) {
     return (
-      <aside className="pplx-fade-in fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ width: 56, backgroundColor: "#faf8f5", borderRight: "1px solid #ece9e2" }}>
+      <motion.aside layout initial={false} animate={{ width: 56 }} transition={springSoft} className="fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ backgroundColor: "#faf8f5", borderRight: "1px solid #ece9e2", overflow: "hidden" }}>
         <button
           onClick={() => setCollapsed(false)}
           className="pplx-side-item flex items-center justify-center"
@@ -116,16 +118,22 @@ export function Sidebar() {
         </Link>
         <div style={{ flex: 1 }} />
         <UserMenu compact />
-      </aside>
+      </motion.aside>
+
     );
   }
 
   /* ---------- Expanded sidebar ---------- */
   return (
-    <aside
-      className="pplx-fade-in fixed left-0 top-0 flex h-screen flex-col"
-      style={{ width: 264, backgroundColor: "#faf8f5" }}
+    <motion.aside
+      layout
+      initial={false}
+      animate={{ width: 264 }}
+      transition={springSoft}
+      className="fixed left-0 top-0 flex h-screen flex-col"
+      style={{ backgroundColor: "#faf8f5", overflow: "hidden" }}
     >
+
       <div className="flex shrink-0 items-center justify-between px-3" style={{ height: 52 }}>
         <div className="flex items-center gap-2">
           <div style={{
@@ -148,17 +156,21 @@ export function Sidebar() {
       </div>
 
       <div className="flex shrink-0 flex-col gap-1 px-2 pb-2">
-        <button
+        <motion.button
+          whileHover={{ y: -1, backgroundColor: "#f1efea" }}
+          whileTap={{ scale: 0.98 }}
+          transition={springSnappy}
           onClick={handleNew}
-          className="pplx-side-item flex items-center justify-between px-2"
-          style={{ height: 36, borderRadius: 8, border: "1px solid #ece9e2", background: "#faf8f5" }}
+          className="flex items-center justify-between px-2"
+          style={{ height: 36, borderRadius: 8, border: "1px solid #ece9e2", background: "#faf8f5", cursor: "pointer" }}
         >
           <div className="flex items-center gap-2.5">
             <SquarePen size={15} strokeWidth={1.6} style={{ color: "#27251e" }} />
             <span style={{ fontSize: 13, color: "#27251e", fontWeight: 500 }}>New Thread</span>
           </div>
           <span className="pplx-kbd">⌘K</span>
-        </button>
+        </motion.button>
+
 
         <div className="relative">
           <Search size={14} strokeWidth={1.6} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "#92918b" }} />
@@ -193,35 +205,49 @@ export function Sidebar() {
         </nav>
 
         {/* Pinned */}
-        {pinned.length > 0 && (
-          <div className="flex flex-col gap-0.5 pb-3">
-            <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>Pinned</div>
-            {pinned.map((t) => (
-              <ThreadRow
-                key={t.id} thread={t} isActive={t.id === activeId} renamingId={renamingId}
-                renameDraft={renameDraft} setRenameDraft={setRenameDraft}
-                onCommitRename={commitRename} onStartRename={startRename} onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-3 pt-2">
-          {Object.entries(groups).map(([group, items]) => {
-            if (items.length === 0) return null;
-            return (
-              <div key={group} className="flex flex-col gap-0.5">
-                <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>
-                  {group}
-                </div>
-                {items.map((t) => (
+        <AnimatePresence initial={false}>
+          {pinned.length > 0 && (
+            <motion.div
+              key="pinned-section"
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: easeOut }}
+              className="flex flex-col gap-0.5 overflow-hidden pb-3"
+            >
+              <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>Pinned</div>
+              <AnimatePresence initial={false}>
+                {pinned.map((t) => (
                   <ThreadRow
                     key={t.id} thread={t} isActive={t.id === activeId} renamingId={renamingId}
                     renameDraft={renameDraft} setRenameDraft={setRenameDraft}
                     onCommitRename={commitRename} onStartRename={startRename} onDelete={handleDelete}
                   />
                 ))}
-              </div>
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="flex flex-col gap-3 pt-2">
+          {Object.entries(groups).map(([group, items]) => {
+            if (items.length === 0) return null;
+            return (
+              <motion.div key={group} layout className="flex flex-col gap-0.5">
+                <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>
+                  {group}
+                </div>
+                <AnimatePresence initial={false}>
+                  {items.map((t) => (
+                    <ThreadRow
+                      key={t.id} thread={t} isActive={t.id === activeId} renamingId={renamingId}
+                      renameDraft={renameDraft} setRenameDraft={setRenameDraft}
+                      onCommitRename={commitRename} onStartRename={startRename} onDelete={handleDelete}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
           {filtered.length === 0 && (
@@ -230,12 +256,13 @@ export function Sidebar() {
             </div>
           )}
         </div>
+
       </div>
 
       <div className="shrink-0 px-2 pb-2 pt-2" style={{ borderTop: "1px solid #ece9e2" }}>
         <UserMenu />
       </div>
-    </aside>
+    </motion.aside>
   );
 }
 
@@ -255,7 +282,24 @@ function ThreadRow({
 }) {
   const isRenaming = renamingId === thread.id;
   return (
-    <div className="pplx-side-item group relative flex w-full items-center" style={{ borderRadius: 6, background: isActive ? "#ece9e2" : "transparent" }}>
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -8, height: 0, marginTop: 0, marginBottom: 0 }}
+      transition={{ duration: 0.2, ease: easeOut }}
+      className="pplx-side-item group relative flex w-full items-center"
+      style={{ borderRadius: 6, background: "transparent" }}
+    >
+      {isActive && (
+        <motion.div
+          layoutId="active-thread-bg"
+          transition={springSoft}
+          style={{ position: "absolute", inset: 0, background: "#ece9e2", borderRadius: 6, zIndex: 0 }}
+        />
+      )}
+      <div style={{ position: "relative", zIndex: 1, display: "flex", width: "100%", alignItems: "center" }}>
+
       {isRenaming ? (
         <input
           autoFocus
@@ -309,8 +353,10 @@ function ThreadRow({
           </PopoverContent>
         </Popover>
       )}
-    </div>
+      </div>
+    </motion.div>
   );
+
 }
 
 function MenuItem({ icon: Icon, label, onClick, danger }: { icon: typeof Pin; label: string; onClick: () => void; danger?: boolean }) {

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight, Plus, Globe, BookOpen, LineChart, Image as ImageIcon, Sparkles,
   Square, ShieldCheck, Check, ChevronDown, Copy, RefreshCw, ThumbsUp, ThumbsDown,
@@ -19,6 +20,7 @@ import { useSelectedModel, useFeedback } from "@/lib/preferences";
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from "@/components/ui/popover";
+import { fadeIn, fadeInUp, staggerContainer, easeOut, springSnappy } from "@/lib/motion";
 
 const suggestions = [
   { icon: Globe, label: "Expliquer une CVE", prompt: "Explique-moi la CVE-2024-3094 (xz-utils) et ses implications." },
@@ -132,8 +134,9 @@ function MessageBubble({
   if (message.role === "user") {
     if (editing) {
       return (
-        <div className="flex justify-end pplx-fade-in">
+        <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="flex justify-end">
           <div style={{ maxWidth: "85%", width: "100%", background: "#f1efea", borderRadius: 16, padding: 12 }}>
+
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -151,11 +154,12 @@ function MessageBubble({
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
+
       );
     }
     return (
-      <div className="group flex justify-end pplx-fade-in">
+      <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="group flex justify-end">
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", maxWidth: "85%", gap: 6 }}>
           {images.length > 0 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -178,7 +182,8 @@ function MessageBubble({
             <Pencil size={11} strokeWidth={1.7} /> Modifier
           </button>
         </div>
-      </div>
+      </motion.div>
+
     );
   }
 
@@ -199,7 +204,7 @@ function MessageBubble({
   };
 
   return (
-    <div className="group pplx-fade-in">
+    <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="group">
       <div className="pplx-markdown" style={{ color: "#27251e", fontSize: 15, lineHeight: 1.65 }}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
@@ -241,17 +246,20 @@ function MessageBubble({
           </span>
         )}
       </div>
-    </div>
+    </motion.div>
+
   );
 }
 
 function ActionBtn({ children, label, onClick, active }: { children: React.ReactNode; label: string; onClick: () => void; active?: boolean }) {
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.08, backgroundColor: "#ece9e2" }}
+      whileTap={{ scale: 0.92 }}
+      transition={springSnappy}
       onClick={onClick}
       title={label}
       aria-label={label}
-      className="pplx-pill"
       style={{
         display: "flex", alignItems: "center", justifyContent: "center",
         width: 28, height: 28, borderRadius: 6, border: "none",
@@ -260,9 +268,10 @@ function ActionBtn({ children, label, onClick, active }: { children: React.React
       }}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }
+
 
 /* ---------- Main ChatView ---------- */
 export function ChatView({ threadId, initialMessages }: Props) {
@@ -413,31 +422,41 @@ export function ChatView({ threadId, initialMessages }: Props) {
   const inputBox = (
     <div className="relative w-full">
       {/* Slash menu */}
-      {slashOpen && (
-        <div
-          className="pplx-fade-in absolute left-0 right-0 z-20"
-          style={{
-            bottom: "calc(100% + 8px)", background: "#faf8f5", border: "1px solid #ece9e2",
-            borderRadius: 12, padding: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-          }}
-        >
-          {filteredSlash.map((c, i) => (
-            <button
-              key={c.cmd}
-              onMouseEnter={() => setSlashIdx(i)}
-              onClick={() => runSlash(c)}
-              className="flex w-full items-center justify-between px-3 py-2 text-left"
-              style={{
-                borderRadius: 8, background: i === slashIdx ? "#ece9e2" : "transparent",
-                border: "none", cursor: "pointer",
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e", fontFamily: "ui-monospace, monospace" }}>{c.cmd}</span>
-              <span style={{ fontSize: 12, color: "#72706b" }}>{c.description}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {slashOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.98 }}
+            transition={{ duration: 0.16, ease: easeOut }}
+            className="absolute left-0 right-0 z-20"
+            style={{
+              bottom: "calc(100% + 8px)", background: "#faf8f5", border: "1px solid #ece9e2",
+              borderRadius: 12, padding: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+            }}
+          >
+            {filteredSlash.map((c, i) => (
+              <motion.button
+                key={c.cmd}
+                initial={{ opacity: 0, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.025, duration: 0.18, ease: easeOut }}
+                onMouseEnter={() => setSlashIdx(i)}
+                onClick={() => runSlash(c)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left"
+                style={{
+                  borderRadius: 8, background: i === slashIdx ? "#ece9e2" : "transparent",
+                  border: "none", cursor: "pointer",
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e", fontFamily: "ui-monospace, monospace" }}>{c.cmd}</span>
+                <span style={{ fontSize: 12, color: "#72706b" }}>{c.description}</span>
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       <div
         className="pplx-input-wrap w-full"
@@ -457,24 +476,38 @@ export function ChatView({ threadId, initialMessages }: Props) {
         {/* attachments preview */}
         {attachments.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-2">
-            {attachments.map((a, i) => (
-              <div key={i} className="relative" style={{ borderRadius: 8, overflow: "hidden", border: "1px solid #ece9e2" }}>
-                <img src={a.url} alt={a.name} style={{ width: 60, height: 60, objectFit: "cover", display: "block" }} />
-                <button
-                  onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                  style={{
-                    position: "absolute", top: 2, right: 2, width: 18, height: 18,
-                    borderRadius: 9999, background: "rgba(0,0,0,0.7)", color: "#faf8f5",
-                    border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-                  }}
-                  aria-label="Remove"
+            <AnimatePresence initial={false}>
+              {attachments.map((a, i) => (
+                <motion.div
+                  key={a.url}
+                  layout
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={springSnappy}
+                  className="relative"
+                  style={{ borderRadius: 8, overflow: "hidden", border: "1px solid #ece9e2" }}
                 >
-                  <X size={11} strokeWidth={2.5} />
-                </button>
-              </div>
-            ))}
+                  <img src={a.url} alt={a.name} style={{ width: 60, height: 60, objectFit: "cover", display: "block" }} />
+                  <motion.button
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.85 }}
+                    onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                    style={{
+                      position: "absolute", top: 2, right: 2, width: 18, height: 18,
+                      borderRadius: 9999, background: "rgba(0,0,0,0.7)", color: "#faf8f5",
+                      border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+                    }}
+                    aria-label="Remove"
+                  >
+                    <X size={11} strokeWidth={2.5} />
+                  </motion.button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
+
 
         <textarea
           ref={textareaRef}
@@ -493,15 +526,19 @@ export function ChatView({ threadId, initialMessages }: Props) {
               ref={fileInputRef} type="file" accept="image/*" multiple hidden
               onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }}
             />
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1, backgroundColor: "#ece9e2" }}
+              whileTap={{ scale: 0.9 }}
+              transition={springSnappy}
               onClick={() => fileInputRef.current?.click()}
-              className="pplx-pill flex h-8 w-8 items-center justify-center"
+              className="flex h-8 w-8 items-center justify-center"
               style={{ borderRadius: 9999, color: "#72706b", background: "transparent", border: "none" }}
               aria-label="Attach image"
               title="Joindre une image"
             >
               <Plus size={18} strokeWidth={1.5} />
-            </button>
+            </motion.button>
+
           </div>
 
           <div className="flex items-center gap-1">
@@ -536,27 +573,44 @@ export function ChatView({ threadId, initialMessages }: Props) {
               </PopoverContent>
             </Popover>
 
-            {isLoading ? (
-              <button
-                onClick={() => stop()}
-                className="pplx-submit flex h-9 w-9 items-center justify-center"
-                style={{ borderRadius: 9999, backgroundColor: "#000000", color: "#faf8f5", border: "none" }}
-                aria-label="Stop (Esc)"
-                title="Arrêter (Esc)"
-              >
-                <Square size={14} strokeWidth={2.2} fill="#faf8f5" />
-              </button>
-            ) : (
-              <button
-                onClick={() => submit(input)}
-                disabled={!input.trim() && attachments.length === 0}
-                className="pplx-submit flex h-9 w-9 items-center justify-center"
-                style={{ borderRadius: 9999, backgroundColor: (input.trim() || attachments.length > 0) ? "#000000" : "#d4d2cc", color: "#faf8f5", border: "none" }}
-                aria-label="Submit"
-              >
-                <ArrowRight size={16} strokeWidth={2.2} />
-              </button>
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {isLoading ? (
+                <motion.button
+                  key="stop"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={springSnappy}
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => stop()}
+                  className="flex h-9 w-9 items-center justify-center"
+                  style={{ borderRadius: 9999, backgroundColor: "#000000", color: "#faf8f5", border: "none" }}
+                  aria-label="Stop (Esc)"
+                  title="Arrêter (Esc)"
+                >
+                  <Square size={14} strokeWidth={2.2} fill="#faf8f5" />
+                </motion.button>
+              ) : (
+                <motion.button
+                  key="send"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={springSnappy}
+                  whileHover={(input.trim() || attachments.length > 0) ? { scale: 1.08 } : undefined}
+                  whileTap={(input.trim() || attachments.length > 0) ? { scale: 0.9 } : undefined}
+                  onClick={() => submit(input)}
+                  disabled={!input.trim() && attachments.length === 0}
+                  className="flex h-9 w-9 items-center justify-center"
+                  style={{ borderRadius: 9999, backgroundColor: (input.trim() || attachments.length > 0) ? "#000000" : "#d4d2cc", color: "#faf8f5", border: "none" }}
+                  aria-label="Submit"
+                >
+                  <ArrowRight size={16} strokeWidth={2.2} />
+                </motion.button>
+              )}
+            </AnimatePresence>
+
           </div>
         </div>
       </div>
@@ -592,13 +646,23 @@ export function ChatView({ threadId, initialMessages }: Props) {
 
           <div className="pplx-fade-up w-full" style={{ animationDelay: "160ms" }}>{inputBox}</div>
 
-          <div className="mt-10 flex w-full gap-3 overflow-x-auto pb-2">
-            {suggestions.map((s, i) => (
-              <button
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="mt-10 flex w-full gap-3 overflow-x-auto pb-2"
+            style={{ paddingTop: 4 }}
+          >
+            {suggestions.map((s) => (
+              <motion.button
                 key={s.label}
+                variants={fadeInUp}
+                whileHover={{ y: -3, borderColor: "#d4d2cc" }}
+                whileTap={{ scale: 0.98 }}
+                transition={springSnappy}
                 onClick={() => submit(s.prompt)}
-                className="pplx-card pplx-fade-up flex shrink-0 flex-col gap-3 p-4 text-left"
-                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", animationDelay: `${220 + i * 70}ms` }}
+                className="flex shrink-0 flex-col gap-3 p-4 text-left"
+                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", cursor: "pointer" }}
               >
                 <div className="flex items-center gap-2">
                   <s.icon size={16} strokeWidth={1.5} style={{ color: "#27251e" }} />
@@ -607,9 +671,10 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 <div style={{ fontSize: 12, color: "#72706b", lineHeight: 1.4 }}>
                   {s.prompt}
                 </div>
-              </button>
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
+
         </div>
 
         <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center" style={{ fontSize: 12, color: "#92918b" }}>
@@ -625,28 +690,45 @@ export function ChatView({ threadId, initialMessages }: Props) {
     <div className="flex h-screen flex-1 flex-col">
       <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 64 }}>
         <div className="mx-auto flex flex-col gap-6 px-6 pb-8" style={{ maxWidth: 760 }}>
-          {messages.map((m) => (
-            <MessageBubble
-              key={m.id}
-              message={m}
-              isLast={m.id === lastAssistantId}
-              onEdit={(newText) => handleEditUser(m.id, newText)}
-              onRegenerate={handleRegenerate}
-              modelLabel={m.role === "assistant" && m.id === lastAssistantId ? usedModel : undefined}
-              durationMs={m.role === "assistant" && m.id === lastAssistantId ? lastDuration : undefined}
-            />
-          ))}
-          {status === "submitted" && (
-            <div className="pplx-fade-in" style={{ color: "#72706b", fontSize: 14 }}>
-              <span className="pplx-shimmer">Réflexion en cours…</span>
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {messages.map((m) => (
+              <MessageBubble
+                key={m.id}
+                message={m}
+                isLast={m.id === lastAssistantId}
+                onEdit={(newText) => handleEditUser(m.id, newText)}
+                onRegenerate={handleRegenerate}
+                modelLabel={m.role === "assistant" && m.id === lastAssistantId ? usedModel : undefined}
+                durationMs={m.role === "assistant" && m.id === lastAssistantId ? lastDuration : undefined}
+              />
+            ))}
+          </AnimatePresence>
+          <AnimatePresence>
+            {status === "submitted" && (
+              <motion.div
+                key="thinking"
+                variants={fadeIn}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+                style={{ color: "#72706b", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}
+              >
+                <motion.span
+                  animate={{ opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ width: 6, height: 6, borderRadius: 9999, background: "#27251e", display: "inline-block" }}
+                />
+                <span className="pplx-shimmer">Réflexion en cours…</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
           {error && (
-            <div style={{ background: "#f1efea", border: "1px solid #ece9e2", borderRadius: 12, padding: 12, fontSize: 13, color: "#27251e" }}>
+            <motion.div variants={fadeInUp} initial="hidden" animate="show" style={{ background: "#f1efea", border: "1px solid #ece9e2", borderRadius: 12, padding: 12, fontSize: 13, color: "#27251e" }}>
               {error.message || "Une erreur est survenue. Réessaie."}
-            </div>
+            </motion.div>
           )}
         </div>
+
       </div>
 
       <div className="shrink-0 px-6 pb-6 pt-2" style={{ background: "linear-gradient(to bottom, rgba(250,248,245,0), #faf8f5 30%)" }}>
