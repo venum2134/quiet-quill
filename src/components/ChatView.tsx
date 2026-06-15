@@ -563,7 +563,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                   {MODELS.map((m) => {
                     const active = m.id === selectedModel;
                     const hovered = hoveredModel === m.id;
-                    const highlighted = hoveredOrActive(hoveredModel, m.id, active);
+                    const highlighted = hovered || (hoveredModel === null && active);
                     return (
                       <motion.button
                         key={m.id}
