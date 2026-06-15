@@ -690,28 +690,45 @@ export function ChatView({ threadId, initialMessages }: Props) {
     <div className="flex h-screen flex-1 flex-col">
       <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 64 }}>
         <div className="mx-auto flex flex-col gap-6 px-6 pb-8" style={{ maxWidth: 760 }}>
-          {messages.map((m) => (
-            <MessageBubble
-              key={m.id}
-              message={m}
-              isLast={m.id === lastAssistantId}
-              onEdit={(newText) => handleEditUser(m.id, newText)}
-              onRegenerate={handleRegenerate}
-              modelLabel={m.role === "assistant" && m.id === lastAssistantId ? usedModel : undefined}
-              durationMs={m.role === "assistant" && m.id === lastAssistantId ? lastDuration : undefined}
-            />
-          ))}
-          {status === "submitted" && (
-            <div className="pplx-fade-in" style={{ color: "#72706b", fontSize: 14 }}>
-              <span className="pplx-shimmer">Réflexion en cours…</span>
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {messages.map((m) => (
+              <MessageBubble
+                key={m.id}
+                message={m}
+                isLast={m.id === lastAssistantId}
+                onEdit={(newText) => handleEditUser(m.id, newText)}
+                onRegenerate={handleRegenerate}
+                modelLabel={m.role === "assistant" && m.id === lastAssistantId ? usedModel : undefined}
+                durationMs={m.role === "assistant" && m.id === lastAssistantId ? lastDuration : undefined}
+              />
+            ))}
+          </AnimatePresence>
+          <AnimatePresence>
+            {status === "submitted" && (
+              <motion.div
+                key="thinking"
+                variants={fadeIn}
+                initial="hidden"
+                animate="show"
+                exit="exit"
+                style={{ color: "#72706b", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}
+              >
+                <motion.span
+                  animate={{ opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ width: 6, height: 6, borderRadius: 9999, background: "#27251e", display: "inline-block" }}
+                />
+                <span className="pplx-shimmer">Réflexion en cours…</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
           {error && (
-            <div style={{ background: "#f1efea", border: "1px solid #ece9e2", borderRadius: 12, padding: 12, fontSize: 13, color: "#27251e" }}>
+            <motion.div variants={fadeInUp} initial="hidden" animate="show" style={{ background: "#f1efea", border: "1px solid #ece9e2", borderRadius: 12, padding: 12, fontSize: 13, color: "#27251e" }}>
               {error.message || "Une erreur est survenue. Réessaie."}
-            </div>
+            </motion.div>
           )}
         </div>
+
       </div>
 
       <div className="shrink-0 px-6 pb-6 pt-2" style={{ background: "linear-gradient(to bottom, rgba(250,248,245,0), #faf8f5 30%)" }}>
