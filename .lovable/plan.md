@@ -1,128 +1,114 @@
-Rendre le chat fonctionnel : threads multiples, sauvegarde locale, Gemini 3 Flash via Lovable AI.
 
-## Architecture
+## Objectif
 
-```
-src/
-├── routes/
-│   ├── index.tsx           → redirige vers /:threadId (crée si vide)
-│   ├── $threadId.tsx        → page de conversation (nouveau)
-│   └── api/chat.ts          → endpoint streaming (nouveau)
-├── lib/
-│   ├── ai-gateway.server.ts → provider helper Lovable AI (nouveau)
-│   └── threads.ts           → store localStorage des threads (nouveau)
-└── components/
-    ├── Sidebar.tsx          → extrait de index.tsx, liste les threads (nouveau)
-    └── ChatView.tsx         → vue conversation avec messages + input (nouveau)
-```
+Rebrander l'app en **Obsidian** et ajouter un flow `/diagnostic` qui force l'utilisateur à passer 4 étapes de vérification (URL → propriété domaine → consentement → lancement) avant qu'un scan ne soit "déclenché". Tout reste **frontend** (state machine + localStorage), pas d'agents réels — on prépare juste le terrain UX/légal.
 
-## Comportement utilisateur
+Design : on garde le langage visuel actuel (cream `#faf8f5`, ink `#27251e`, bordures `#ece9e2`, animations `pplx-fade-in` / `pplx-fade-up`, cartes arrondies, input pill noir). Aucun nouveau token couleur — on réutilise le système existant pour rester premium et cohérent.
 
-1. **Premier accès `/`** : crée un thread vide, redirige vers `/{threadId}`
-2. **Page d'accueil thread vide** : garde le grand wordmark "perplexity" + input central + cards de suggestions (état actuel)
-3. **Envoi du premier message** : 
-   - wordmark/cards disparaissent
-   - layout bascule en mode conversation : messages en haut qui scrollent, input ancré en bas
-   - réponse streamée token par token (markdown rendu)
-4. **Sidebar** : liste les threads sauvegardés, click → navigue, "New Thread" → nouveau thread + nav, hover → bouton `⋯` pour supprimer/renommer
-5. **Auto-titre** : après la 1re réponse, on prend les ~6 premiers mots du prompt utilisateur comme titre (pas d'appel IA pour ça, gratuit)
-6. **Persistance** : tout dans `localStorage` clé `perplexity-threads`
+---
 
-## Backend — `src/routes/api/chat.ts`
+## 1. Rebranding Obsidian
 
-Route serveur TanStack qui :
-- Reçoit `{ messages: UIMessage[] }` en POST
-- Lit `process.env.LOVABLE_API_KEY` 
-- Appelle `streamText({ model: gateway("google/gemini-3-flash-preview"), messages, system })`
-- System prompt : "You are Perplexity, a helpful AI assistant. Answer concisely with markdown formatting. Use lists, bold, and code blocks where helpful."
-- Retourne `result.toUIMessageStreamResponse()`
-- Gère 429 (rate limit) et 402 (crédits épuisés) avec messages clairs
+- Wordmark landing : `perplexity` → `obsidian` (même taille, même graisse)
+- Footer disclaimers : `Perplexity may produce…` → `Obsidian may produce…`
+- Title / meta dans `__root.tsx` et routes : `Obsidian — Automated pentest, democratized`
+- Sidebar : ajouter un nouvel item nav `Diagnostic` (icône `ShieldCheck`) en haut de la liste, au-dessus de Discover. Clic → navigue vers `/diagnostic`.
+- Cartes de suggestion sur la landing : remplacer les 5 suggestions génériques (quantum, S&P 500…) par 5 prompts cybersécurité orientés Obsidian :
+  - `Lancer un diagnostic` (CTA principal, style légèrement accentué) → push `/diagnostic`
+  - `Expliquer une CVE`
+  - `Analyser un header HTTP`
+  - `Comprendre OWASP Top 10`
+  - `Auditer un site WordPress`
 
-## Frontend chat — `src/components/ChatView.tsx`
+## 2. Nouvelle route `/diagnostic`
 
-Utilise `useChat` de `@ai-sdk/react` avec :
-- `id: threadId` (clé de remount entre threads)
-- `messages: initialMessages` (chargés depuis localStorage)
-- `transport: new DefaultChatTransport({ api: "/api/chat" })`
-- `onFinish` : sauvegarde le tableau messages complet dans localStorage pour ce thread, et set le titre si c'est le 1er échange
+Fichier : `src/routes/diagnostic.tsx`. Pas un thread chat classique — c'est une **conversation guidée** rendue dans le même layout (sidebar + colonne centrale, max-width 760, bulles user `#f1efea`, réponses assistant en markdown). On réutilise les composants visuels mais on contrôle la state machine nous-mêmes (pas de `useChat`).
 
-**Deux états visuels** dans `ChatView` :
-- `messages.length === 0` → état "landing" : wordmark + input centrés + cards suggestions
-- `messages.length > 0` → état "conversation" : 
-  - liste de messages scrollable (max-w 720px, centré)
-  - user message : bulle alignée droite, fond `#f1efea`, radius 16px, padding 12/16
-  - assistant message : pas de fond (règle chat-ui-composition), markdown rendu, padding vertical seul
-  - indicateur "Thinking..." (shimmer) quand `status === "submitted"`
-  - auto-scroll vers le bas
-  - input reste ancré en bas (sticky), focus auto après envoi
+### State machine (frontend, localStorage)
 
-Click sur une carte de suggestion → pré-remplit l'input et envoie.
-
-## Store threads — `src/lib/threads.ts`
-
-```ts
-type Thread = { id: string; title: string; updatedAt: number; messages: UIMessage[] };
-
-loadThreads(): Thread[]                          // depuis localStorage
-saveThread(thread: Thread): void                 // upsert + tri par updatedAt
-deleteThread(id: string): void
-createThread(): Thread                           // id = crypto.randomUUID(), title = "New Thread"
-getThread(id: string): Thread | null
-groupByDate(threads): { Today, Yesterday, "Previous 7 days", "Older" }
+```text
+idle → awaiting_url → url_invalid (retry)
+                   → awaiting_method
+                       → method_chosen (dns | meta | file)
+                           → awaiting_verification (polling simulé)
+                               → verification_failed (retry / change method)
+                               → verified
+                                   → awaiting_consent
+                                       → consent_given
+                                           → scan_running (faux stream)
+                                               → scan_complete
 ```
 
-Guard `typeof window !== "undefined"` partout. Toujours appelé depuis composants/effects, jamais au module scope.
+Chaque transition push une nouvelle "bulle" dans le chat avec animation `pplx-fade-in`. L'input du bas change de mode selon l'étape (texte libre, bouton CTA, checkbox + bouton, désactivé pendant scan).
 
-## Sidebar refactor — `src/components/Sidebar.tsx`
+### Étape 1 — URL
 
-Extrait propre de la sidebar actuelle. Différences :
-- La liste "history" devient dynamique : `loadThreads()` + abonnement à un event custom `threads-updated` (dispatch après save/delete pour rafraîchir sans contexte global)
-- Click sur item → `navigate({ to: "/$threadId", params: { threadId } })`
-- Hover → `⋯` (PopoverMenu shadcn) avec "Rename" et "Delete"
-- "New Thread" → `createThread()` puis navigate, raccourci `⌘K` branché via `useEffect` listener clavier
-- Thread actif en surbrillance (`#ece9e2` background) via comparaison avec `useParams`
+Bulle assistant : *"Quel domaine veux-tu analyser ?"* + petit texte gris *"Exemple : monsite.ma"*. Input texte normal. Validation regex domaine simple côté front. Si invalide → bulle assistant rouge subtile (bordure `#ece9e2`, texte `#27251e`) : *"Ce domaine n'a pas l'air valide. Réessaie."*
 
-## Markdown rendering
+### Étape 2 — Choix méthode de vérification
 
-Installer `react-markdown` + `remark-gfm` pour les messages assistant. Style :
-- Pas de `prose` Tailwind (trop générique) → CSS scoppé minimal avec couleur `#27251e`, taille 16px, line-height 1.6
-- `p` espacement 12px
-- `ul/ol` indent 24px, gap 6px
-- `code` inline : fond `#f1efea`, padding 2px 6px, radius 4px, font-mono
-- `pre code` : fond `#27251e`, texte `#faf8f5`, padding 14px, radius 8px, overflow-x-auto, font-mono 13px
-- `strong` weight 600
-- `a` underline + couleur ink
-- `h1/h2/h3` weights 600/500/500, tailles 20/18/16
+Bulle assistant + carte avec 3 boutons côte à côte (réutilise le style `pplx-card`) :
+- **Fichier .well-known** (icône `FileText`)
+- **DNS TXT record** (icône `Globe`)
+- **Meta tag HTML** (icône `Code`)
 
-## Dépendances à installer
+Génération d'un token unique côté front : `obsidian-verify-${nanoid(24)}`. Stocké dans le state de la conversation.
 
-```
-bun add ai @ai-sdk/react @ai-sdk/openai-compatible react-markdown remark-gfm
-```
+### Étape 3 — Instructions + polling
 
-## Routes
+Selon la méthode choisie, on affiche une bulle assistant avec un bloc de code copiable :
+- DNS : `obsidian-verify=TOKEN` à mettre en record TXT à la racine
+- Meta : `<meta name="obsidian-verify" content="TOKEN" />`
+- Fichier : poser `TOKEN` dans `https://domaine/.well-known/obsidian-verify.txt`
 
-1. **`src/routes/index.tsx`** — réduit à un loader/component qui :
-   - charge threads existants
-   - si vide → `createThread()`
-   - dans tous les cas → `redirect({ to: "/$threadId", params: { threadId: firstId } })`
-   - sinon redirect vers le thread le plus récent
+Chaque bloc a un bouton **Copier** (clipboard API) et un bouton **Vérifier maintenant**.
 
-2. **`src/routes/$threadId.tsx`** — page principale :
-   - Sidebar (composant) + main column
-   - Récupère `threadId` via `Route.useParams()`
-   - Charge messages initiaux depuis localStorage pour ce thread
-   - Rend `<ChatView threadId={threadId} initialMessages={...} key={threadId} />`
-   - Top-right : boutons "Log in" / "Sign up" (gardés, purement décoratifs)
+Polling simulé : quand l'user clique "Vérifier", on lance un `setInterval` toutes les 5s qui appelle une fonction `checkVerification(domain, method, token)` factice. Pour la démo, elle retourne `true` après 10–15s (avec une chance d'échec aléatoire ~20% pour montrer le retry path). Pendant le polling, bulle animée *"Vérification en cours…"* avec le shimmer `pplx-caret`. **Note technique :** la vraie vérification réseau (DNS lookup, HTTP GET) viendra plus tard via une serverFn — l'interface front est déjà branchée.
 
-## Détails techniques
+Une fois validé → bulle ✓ verte discrète *"Domaine vérifié : monsite.ma"*.
 
-- **Provider helper** : copier-coller exact du pattern `ai-sdk-lovable-gateway` (custom fetch avec capture run-id, `withLovableAiGatewayRunIdHeader` autour de la réponse stream)
-- **Header `X-Lovable-AIG-SDK: vercel-ai-sdk`** obligatoire
-- **`LOVABLE_API_KEY`** : auto-provisionné via `ai_gateway--create` au début
-- **Gestion erreurs UI** : toast (composant `sonner` déjà dans shadcn template ? sinon `alert` simple) sur 429/402
-- **Animation** : wordmark/cards en `pplx-fade-up`, messages en fade-in léger (150ms)
-- **Input** : `Enter` envoie, `Shift+Enter` saut de ligne, bouton submit désactivé pendant `submitted`/`streaming`
-- **Aucun changement** sur les styles existants (palette, typo, sidebar refaite la semaine dernière) — on ajoute uniquement la logique et la vue conversation
+### Étape 4 — Consentement légal
 
-Résultat : on tape un prompt, on appuie Entrée → réponse streamée en markdown, conversation persistée, sidebar qui se met à jour avec le titre auto-extrait.
+Bulle assistant + carte avec :
+- Texte légal : *"Je certifie être propriétaire du domaine `monsite.ma` ou disposer d'une autorisation écrite du propriétaire pour effectuer ce test de sécurité. Je comprends qu'un scan non autorisé peut constituer une infraction pénale dans ma juridiction."*
+- Checkbox `J'accepte les CGU et la politique d'usage responsable`
+- Bouton noir **Je confirme et je lance le scan** (désactivé tant que checkbox non cochée)
+
+Au clic : on log dans `localStorage` (clé `obsidian:audit-trail`) un objet `{ domain, method, token, timestamp, userAgent, consentText }`. L'IP réelle nécessitera la serverFn plus tard — on note `ip: "pending-server-capture"` pour l'instant.
+
+### Étape 5 — "Scan lancé"
+
+Bulle assistant avec un faux stream :
+- *"✓ Domaine vérifié"*
+- *"✓ Consentement enregistré"*
+- *"Initialisation des agents…"* (avec spinner)
+- *"Web Recon agent : démarré"*, *"Network agent : démarré"*… (lignes qui apparaissent toutes les 800ms)
+- Après ~6s : *"Scan en cours. Les résultats arriveront dans Library quand l'analyse sera terminée."* + bouton **Voir un exemple de rapport**.
+
+Input du bas remplacé par un bandeau gris : *"Scan en cours — tu peux fermer cette fenêtre."*
+
+## 3. Persistance
+
+- `src/lib/diagnostic.ts` : types (`DiagnosticState`, `Step`, `VerificationMethod`, `AuditEntry`), helpers `loadDiagnostic()` / `saveDiagnostic()` / `appendAuditTrail()`.
+- État stocké sous `obsidian:diagnostic:current` (un seul diagnostic actif à la fois pour commencer).
+- Si l'user revient sur `/diagnostic` avec un état en cours → reprend à l'étape exacte.
+
+## 4. Détails techniques (à zapper si non-tech)
+
+- Nouveau fichier route : `src/routes/diagnostic.tsx` (TanStack file route).
+- Nouveau composant : `src/components/DiagnosticFlow.tsx` qui contient la state machine (`useReducer`).
+- Nouveau composant : `src/components/VerificationCard.tsx` (méthodes + instructions + copy).
+- Nouveau composant : `src/components/ConsentCard.tsx`.
+- `src/lib/diagnostic.ts` pour la persistance localStorage.
+- Sidebar : ajout d'un item `Diagnostic` actif quand `pathname === "/diagnostic"`.
+- Index landing : ajout d'un bouton CTA *"Lancer un diagnostic"* en plus des cartes existantes — clic = `navigate("/diagnostic")`.
+- Aucun changement backend dans cette itération. Les TODOs sont laissés en commentaire (`// TODO: replace with serverFn calling DNS resolver / HTTP fetch`).
+
+## 5. Hors scope (à clarifier plus tard)
+
+- Vérification réelle (DNS lookup, HTTP GET) → nécessite serverFn + résolveur DNS Worker-compat
+- Blacklist domaines sensibles → liste à fournir
+- Rate limiting → backend
+- KYC / pièce d'identité → auth + storage (Lovable Cloud)
+- Audit trail persistant côté serveur (IP réelle) → DB
+- Génération réelle du rapport de scan
