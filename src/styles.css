@@ -123,6 +123,19 @@
   animation: pplx-blink 1.1s steps(1) infinite;
 }
 
+@keyframes pplx-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.pplx-shimmer {
+  background: linear-gradient(90deg, #92918b 0%, #27251e 50%, #92918b 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pplx-shimmer 1.8s linear infinite;
+}
+
 /* Sidebar — Claude/ChatGPT-style */
 .pplx-sidebar-scroll {
   scrollbar-width: thin;
