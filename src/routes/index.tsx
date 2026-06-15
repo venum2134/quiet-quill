@@ -5,8 +5,8 @@ import { createThread, loadThreads } from "@/lib/threads";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "perplexity" },
-      { name: "description", content: "Where knowledge begins." },
+      { title: "Obsidian" },
+      { name: "description", content: "Le pentest automatisé, démocratisé." },
     ],
   }),
   component: IndexRedirect,

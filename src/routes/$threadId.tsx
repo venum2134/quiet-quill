@@ -8,8 +8,8 @@ import { getThread } from "@/lib/threads";
 export const Route = createFileRoute("/$threadId")({
   head: () => ({
     meta: [
-      { title: "perplexity" },
-      { name: "description", content: "Where knowledge begins." },
+      { title: "Obsidian" },
+      { name: "description", content: "Le pentest automatisé, démocratisé." },
     ],
   }),
   component: ThreadPage,
