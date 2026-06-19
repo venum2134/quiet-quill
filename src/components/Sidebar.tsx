@@ -125,9 +125,6 @@ export function Sidebar() {
 
 
   /* ---------- Expanded sidebar ---------- */
-  const [searchOpen, setSearchOpen] = [filter.length > 0, undefined] as const; // placeholder, real state below
-  // (real state declared above via useState — see hook section)
-
   return (
     <motion.aside
       layout
