@@ -19,5 +19,5 @@ function IndexRedirect() {
     const target = existing[0] ?? createThread();
     navigate({ to: "/$threadId", params: { threadId: target.id }, replace: true });
   }, [navigate]);
-  return <div style={{ minHeight: "100vh", backgroundColor: "#faf8f5" }} />;
+  return <div style={{ minHeight: "100vh", backgroundColor: "var(--c-bg)" }} />;
 }

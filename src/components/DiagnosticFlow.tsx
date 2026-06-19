@@ -254,19 +254,19 @@ export function DiagnosticFlow() {
       {/* Header band */}
       <div
         className="pplx-fade-in absolute left-0 right-0 top-0 flex items-center justify-between px-6"
-        style={{ height: 56, paddingLeft: 288, background: "linear-gradient(to bottom, #faf8f5 65%, rgba(250,248,245,0))", zIndex: 5 }}
+        style={{ height: 56, paddingLeft: 288, background: "linear-gradient(to bottom, var(--c-bg) 65%, rgba(var(--c-bg-rgb), 0))", zIndex: 5 }}
       >
-        <div className="flex items-center gap-2" style={{ color: "#27251e" }}>
+        <div className="flex items-center gap-2" style={{ color: "var(--c-fg)" }}>
           <ShieldCheck size={16} strokeWidth={1.7} />
           <span style={{ fontSize: 13, fontWeight: 500 }}>Diagnostic</span>
-          <span style={{ fontSize: 12, color: "#92918b", marginLeft: 6 }}>
+          <span style={{ fontSize: 12, color: "var(--c-muted)", marginLeft: 6 }}>
             {state.domain ? `· ${state.domain}` : "· nouvelle analyse"}
           </span>
         </div>
         <button
           onClick={handleReset}
           className="pplx-pill flex items-center gap-1.5 px-3 py-1.5"
-          style={{ borderRadius: 9999, border: "1px solid #ece9e2", fontSize: 12, fontWeight: 500, color: "#27251e", background: "transparent" }}
+          style={{ borderRadius: 9999, border: "1px solid var(--c-surface-strong)", fontSize: 12, fontWeight: 500, color: "var(--c-fg)", background: "transparent" }}
         >
           <RefreshCw size={12} strokeWidth={1.7} />
           Réinitialiser
@@ -301,12 +301,12 @@ export function DiagnosticFlow() {
       </div>
 
       {/* Input zone */}
-      <div className="shrink-0 px-6 pb-6 pt-2" style={{ background: "linear-gradient(to bottom, rgba(250,248,245,0), #faf8f5 30%)" }}>
+      <div className="shrink-0 px-6 pb-6 pt-2" style={{ background: "linear-gradient(to bottom, rgba(var(--c-bg-rgb), 0), var(--c-bg) 30%)" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
           {state.step === "awaiting_url" && (
             <div
               className="pplx-input-wrap w-full pplx-fade-up"
-              style={{ backgroundColor: "#faf8f5", border: "1px solid #ece9e2", borderRadius: 16, padding: 14 }}
+              style={{ backgroundColor: "var(--c-bg)", border: "1px solid var(--c-surface-strong)", borderRadius: 16, padding: 14 }}
             >
               <textarea
                 ref={inputRef}
@@ -315,18 +315,18 @@ export function DiagnosticFlow() {
                 onKeyDown={onKeyDown}
                 placeholder="ex : monsite.ma"
                 rows={1}
-                className="w-full resize-none bg-transparent outline-none placeholder:text-[#92918b]"
-                style={{ fontSize: 16, color: "#27251e", lineHeight: 1.5, border: "none", maxHeight: 200 }}
+                className="w-full resize-none bg-transparent outline-none placeholder:text-[var(--c-muted)]"
+                style={{ fontSize: 16, color: "var(--c-fg)", lineHeight: 1.5, border: "none", maxHeight: 200 }}
               />
               <div className="mt-2 flex items-center justify-between gap-2">
-                <span style={{ fontSize: 12, color: "#92918b" }}>
+                <span style={{ fontSize: 12, color: "var(--c-muted)" }}>
                   Saisis le domaine racine, sans `https://`.
                 </span>
                 <button
                   onClick={handleSubmitUrl}
                   disabled={!input.trim()}
                   className="pplx-submit flex h-9 w-9 items-center justify-center"
-                  style={{ borderRadius: 9999, backgroundColor: input.trim() ? "#000000" : "#d4d2cc", color: "#faf8f5", border: "none" }}
+                  style={{ borderRadius: 9999, backgroundColor: input.trim() ? "var(--c-inverse)" : "var(--c-border-strong)", color: "var(--c-bg)", border: "none" }}
                   aria-label="Continuer"
                 >
                   <ArrowRight size={16} strokeWidth={2.2} />
@@ -338,7 +338,7 @@ export function DiagnosticFlow() {
           {state.step !== "awaiting_url" && state.step !== "scan_complete" && (
             <div
               className="pplx-fade-in flex items-center justify-center"
-              style={{ height: 56, borderRadius: 16, border: "1px dashed #ece9e2", color: "#92918b", fontSize: 13 }}
+              style={{ height: 56, borderRadius: 16, border: "1px dashed var(--c-surface-strong)", color: "var(--c-muted)", fontSize: 13 }}
             >
               {state.step === "scan_running"
                 ? "Scan en cours — tu peux fermer cette fenêtre, on te préviendra."
@@ -349,7 +349,7 @@ export function DiagnosticFlow() {
           {state.step === "scan_complete" && (
             <div
               className="pplx-fade-in flex items-center justify-between gap-3 px-4"
-              style={{ height: 56, borderRadius: 16, border: "1px solid #ece9e2", background: "#f1efea", fontSize: 13, color: "#27251e" }}
+              style={{ height: 56, borderRadius: 16, border: "1px solid var(--c-surface-strong)", background: "var(--c-surface)", fontSize: 13, color: "var(--c-fg)" }}
             >
               <div className="flex items-center gap-2">
                 <Sparkles size={14} strokeWidth={1.7} />
@@ -358,14 +358,14 @@ export function DiagnosticFlow() {
               <button
                 onClick={handleReset}
                 className="pplx-dark-pill px-3 py-1.5"
-                style={{ borderRadius: 9999, fontSize: 12, fontWeight: 500, color: "#faf8f5", background: "#000000", border: "none" }}
+                style={{ borderRadius: 9999, fontSize: 12, fontWeight: 500, color: "var(--c-bg)", background: "var(--c-inverse)", border: "none" }}
               >
                 Nouveau diagnostic
               </button>
             </div>
           )}
 
-          <div className="mt-2 text-center" style={{ fontSize: 11, color: "#92918b" }}>
+          <div className="mt-2 text-center" style={{ fontSize: 11, color: "var(--c-muted)" }}>
             Obsidian n'effectue aucun scan sans vérification de propriété et consentement explicite.
           </div>
         </div>
@@ -390,7 +390,7 @@ function BubbleView({
       <div className="flex justify-end pplx-fade-in">
         <div
           style={{
-            maxWidth: "85%", background: "#f1efea", color: "#27251e",
+            maxWidth: "85%", background: "var(--c-surface)", color: "var(--c-fg)",
             borderRadius: 16, padding: "10px 16px", fontSize: 15, lineHeight: 1.5,
             whiteSpace: "pre-wrap", wordBreak: "break-word",
           }}
@@ -427,7 +427,7 @@ function BubbleView({
     return (
       <div
         className="pplx-fade-in flex items-center gap-2"
-        style={{ alignSelf: "flex-start", padding: "8px 14px", borderRadius: 12, background: "#eef3ee", border: "1px solid #d8e3d8", color: "#27251e", fontSize: 14 }}
+        style={{ alignSelf: "flex-start", padding: "8px 14px", borderRadius: 12, background: "var(--c-success-bg)", border: "1px solid var(--c-success-border)", color: "var(--c-fg)", fontSize: 14 }}
       >
         <Check size={14} strokeWidth={2} />
         <Markdown text={bubble.text ?? ""} inline />
@@ -438,7 +438,7 @@ function BubbleView({
     return (
       <div
         className="pplx-fade-in flex items-start gap-2"
-        style={{ padding: "10px 14px", borderRadius: 12, background: "#faf3ee", border: "1px solid #e8d8c8", color: "#27251e", fontSize: 14 }}
+        style={{ padding: "10px 14px", borderRadius: 12, background: "var(--c-warning-bg)", border: "1px solid var(--c-warning-border)", color: "var(--c-fg)", fontSize: 14 }}
       >
         <AlertTriangle size={14} strokeWidth={1.8} style={{ marginTop: 3, flexShrink: 0 }} />
         <Markdown text={bubble.text ?? ""} inline />
@@ -448,7 +448,7 @@ function BubbleView({
 
   // default: text
   return (
-    <div className="pplx-fade-in pplx-markdown" style={{ color: "#27251e", fontSize: 15, lineHeight: 1.65 }}>
+    <div className="pplx-fade-in pplx-markdown" style={{ color: "var(--c-fg)", fontSize: 15, lineHeight: 1.65 }}>
       <Markdown text={bubble.text ?? ""} />
     </div>
   );
@@ -473,22 +473,22 @@ function MethodPicker({ onPick, disabled }: { onPick: (m: VerificationMethod) =>
         <motion.button
           key={o.method}
           variants={fadeInUp}
-          whileHover={disabled ? undefined : { y: -3, borderColor: "#27251e" }}
+          whileHover={disabled ? undefined : { y: -3, borderColor: "var(--c-fg)" }}
           whileTap={disabled ? undefined : { scale: 0.97 }}
           transition={springSnappy}
           onClick={() => !disabled && onPick(o.method)}
           disabled={disabled}
           className="flex flex-col gap-2 p-3 text-left"
           style={{
-            borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2",
+            borderRadius: 12, backgroundColor: "var(--c-bg)", border: "1px solid var(--c-surface-strong)",
             cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.6 : 1,
           }}
         >
           <div className="flex items-center gap-2">
-            <o.icon size={14} strokeWidth={1.7} style={{ color: "#27251e" }} />
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e" }}>{o.label}</span>
+            <o.icon size={14} strokeWidth={1.7} style={{ color: "var(--c-fg)" }} />
+            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--c-fg)" }}>{o.label}</span>
           </div>
-          <span style={{ fontSize: 11, color: "#72706b", lineHeight: 1.4 }}>{o.desc}</span>
+          <span style={{ fontSize: 11, color: "var(--c-muted-fg)", lineHeight: 1.4 }}>{o.desc}</span>
           {/* keep i unused warning quiet via noop */}
           <span hidden>{i}</span>
         </motion.button>
@@ -539,19 +539,19 @@ function VerificationCard({
   return (
     <div
       className="pplx-fade-in flex flex-col gap-3 p-4"
-      style={{ borderRadius: 12, border: "1px solid #ece9e2", background: "#faf8f5" }}
+      style={{ borderRadius: 12, border: "1px solid var(--c-surface-strong)", background: "var(--c-bg)" }}
     >
-      <div style={{ fontSize: 13, color: "#27251e", lineHeight: 1.55 }}>
+      <div style={{ fontSize: 13, color: "var(--c-fg)", lineHeight: 1.55 }}>
         <Markdown text={instructions} />
       </div>
       <div className="flex items-center justify-between">
-        <span style={{ fontSize: 11, fontWeight: 500, color: "#92918b", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ fontSize: 11, fontWeight: 500, color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
           {label}
         </span>
         <button
           onClick={copy}
           className="pplx-pill flex items-center gap-1 px-2 py-1"
-          style={{ borderRadius: 6, fontSize: 11, color: "#27251e", background: "transparent", border: "1px solid #ece9e2" }}
+          style={{ borderRadius: 6, fontSize: 11, color: "var(--c-fg)", background: "transparent", border: "1px solid var(--c-surface-strong)" }}
         >
           {copied ? <Check size={11} strokeWidth={2} /> : <Copy size={11} strokeWidth={1.7} />}
           {copied ? "Copié" : "Copier"}
@@ -559,7 +559,7 @@ function VerificationCard({
       </div>
       <pre
         style={{
-          background: "#27251e", color: "#faf8f5", padding: "12px 14px", borderRadius: 10,
+          background: "var(--c-fg)", color: "var(--c-bg)", padding: "12px 14px", borderRadius: 10,
           overflowX: "auto", fontSize: 12.5, lineHeight: 1.5, margin: 0,
         }}
       >
@@ -571,7 +571,7 @@ function VerificationCard({
         className="pplx-dark-pill self-end flex items-center gap-2 px-4 py-2"
         style={{
           borderRadius: 9999, fontSize: 13, fontWeight: 500,
-          color: "#faf8f5", background: disabled ? "#92918b" : "#000000", border: "none",
+          color: "var(--c-bg)", background: disabled ? "var(--c-muted)" : "var(--c-inverse)", border: "none",
           cursor: disabled ? "default" : "pointer",
         }}
       >
@@ -587,9 +587,9 @@ function ConsentCard({ onConfirm, disabled }: { onConfirm: () => void; disabled:
   return (
     <div
       className="pplx-fade-in flex flex-col gap-3 p-4"
-      style={{ borderRadius: 12, border: "1px solid #ece9e2", background: "#faf8f5" }}
+      style={{ borderRadius: 12, border: "1px solid var(--c-surface-strong)", background: "var(--c-bg)" }}
     >
-      <p style={{ fontSize: 13, color: "#27251e", lineHeight: 1.6, margin: 0 }}>
+      <p style={{ fontSize: 13, color: "var(--c-fg)", lineHeight: 1.6, margin: 0 }}>
         {CONSENT_TEXT}
       </p>
       <label className="flex items-start gap-2" style={{ cursor: disabled ? "default" : "pointer" }}>
@@ -598,9 +598,9 @@ function ConsentCard({ onConfirm, disabled }: { onConfirm: () => void; disabled:
           checked={checked}
           onChange={(e) => setChecked(e.target.checked)}
           disabled={disabled}
-          style={{ marginTop: 3, accentColor: "#27251e" }}
+          style={{ marginTop: 3, accentColor: "var(--c-fg)" }}
         />
-        <span style={{ fontSize: 13, color: "#27251e" }}>
+        <span style={{ fontSize: 13, color: "var(--c-fg)" }}>
           J'accepte les CGU et la politique d'usage responsable.
         </span>
       </label>
@@ -610,13 +610,13 @@ function ConsentCard({ onConfirm, disabled }: { onConfirm: () => void; disabled:
         className="pplx-dark-pill self-end px-4 py-2"
         style={{
           borderRadius: 9999, fontSize: 13, fontWeight: 500,
-          color: "#faf8f5", background: !checked || disabled ? "#d4d2cc" : "#000000",
+          color: "var(--c-bg)", background: !checked || disabled ? "var(--c-border-strong)" : "var(--c-inverse)",
           border: "none", cursor: !checked || disabled ? "default" : "pointer",
         }}
       >
         Je confirme et je lance le scan
       </button>
-      <span style={{ fontSize: 11, color: "#92918b" }}>
+      <span style={{ fontSize: 11, color: "var(--c-muted)" }}>
         Timestamp, user-agent et consentement seront enregistrés dans l'audit trail.
       </span>
     </div>
@@ -627,36 +627,36 @@ function ScanProgress({ lines, done }: { lines: string[]; done: boolean }) {
   return (
     <div
       className="pplx-fade-in flex flex-col gap-2 p-4"
-      style={{ borderRadius: 12, border: "1px solid #ece9e2", background: "#faf8f5", fontSize: 13, color: "#27251e" }}
+      style={{ borderRadius: 12, border: "1px solid var(--c-surface-strong)", background: "var(--c-bg)", fontSize: 13, color: "var(--c-fg)" }}
     >
-      <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#72706b", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 500 }}>
+      <div className="flex items-center gap-2" style={{ fontSize: 12, color: "var(--c-muted-fg)", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 500 }}>
         {done ? <Check size={12} strokeWidth={2} /> : <Loader2 size={12} strokeWidth={2} className="animate-spin" />}
         {done ? "Scan terminé" : "Agents en cours d'exécution"}
       </div>
       <div className="flex flex-col gap-1 font-mono" style={{ fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace', fontSize: 12.5, lineHeight: 1.6 }}>
-        <div style={{ color: "#72706b" }}>$ obsidian scan --consent verified</div>
+        <div style={{ color: "var(--c-muted-fg)" }}>$ obsidian scan --consent verified</div>
         {lines.map((l, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.25, ease: easeOut }}
-            style={{ color: "#27251e" }}
+            style={{ color: "var(--c-fg)" }}
           >
-            <span style={{ color: "#92918b" }}>›</span> {l}
+            <span style={{ color: "var(--c-muted)" }}>›</span> {l}
           </motion.div>
         ))}
         {!done && (
           <motion.div
             animate={{ opacity: [0.3, 1, 0.3] }}
             transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-            style={{ color: "#92918b" }}
+            style={{ color: "var(--c-muted)" }}
           >…</motion.div>
         )}
 
       </div>
       {done && (
-        <p style={{ fontSize: 13, color: "#27251e", margin: 0 }}>
+        <p style={{ fontSize: 13, color: "var(--c-fg)", margin: 0 }}>
           Les résultats arriveront dans <strong>Library</strong> dès que les agents auront finalisé leur diagnostic.
         </p>
       )}
@@ -686,7 +686,7 @@ function Markdown({ text, inline = false }: { text: string; inline?: boolean }) 
     if (p.type === "br") return <br key={i} />;
     if (p.type === "code")
       return (
-        <code key={i} style={{ background: "#f1efea", padding: "1px 6px", borderRadius: 4, fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace', fontSize: "0.88em" }}>
+        <code key={i} style={{ background: "var(--c-surface)", padding: "1px 6px", borderRadius: 4, fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace', fontSize: "0.88em" }}>
           {p.value}
         </code>
       );

@@ -90,11 +90,11 @@ export function Sidebar() {
   /* ---------- Collapsed sidebar ---------- */
   if (collapsed) {
     return (
-      <motion.aside layout initial={false} animate={{ width: 56 }} transition={springSoft} className="fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ backgroundColor: "#faf8f5", borderRight: "1px solid #ece9e2", overflow: "hidden" }}>
+      <motion.aside layout initial={false} animate={{ width: 56 }} transition={springSoft} className="fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ backgroundColor: "var(--c-bg)", borderRight: "1px solid var(--c-surface-strong)", overflow: "hidden" }}>
         <button
           onClick={() => setCollapsed(false)}
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 32, height: 32, borderRadius: 6, color: "#27251e", marginBottom: 6 }}
+          style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", marginBottom: 6 }}
           aria-label="Expand sidebar"
           title="Étendre (⌘\\)"
         >
@@ -103,7 +103,7 @@ export function Sidebar() {
         <button
           onClick={handleNew}
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 32, height: 32, borderRadius: 6, color: "#27251e", marginBottom: 6 }}
+          style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", marginBottom: 6 }}
           aria-label="New Thread" title="Nouveau (⌘K)"
         >
           <SquarePen size={16} strokeWidth={1.6} />
@@ -111,7 +111,7 @@ export function Sidebar() {
         <Link
           to="/diagnostic"
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 32, height: 32, borderRadius: 6, color: "#27251e", background: onDiagnostic ? "#ece9e2" : "transparent" }}
+          style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", background: onDiagnostic ? "var(--c-surface-strong)" : "transparent" }}
           aria-label="Diagnostic" title="Diagnostic"
         >
           <ShieldCheck size={16} strokeWidth={1.7} />
@@ -131,24 +131,24 @@ export function Sidebar() {
       animate={{ width: 264 }}
       transition={springSoft}
       className="fixed left-0 top-0 flex h-screen flex-col"
-      style={{ backgroundColor: "#faf8f5", overflow: "hidden" }}
+      style={{ backgroundColor: "var(--c-bg)", overflow: "hidden" }}
     >
 
       <div className="flex shrink-0 items-center justify-between px-3" style={{ height: 52 }}>
         <div className="flex items-center gap-2">
           <div style={{
-            width: 22, height: 22, borderRadius: 6, background: "#27251e",
+            width: 22, height: 22, borderRadius: 6, background: "var(--c-fg)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#faf8f5", fontSize: 12, fontWeight: 600,
+            color: "var(--c-bg)", fontSize: 12, fontWeight: 600,
           }}>◆</div>
-          <span style={{ fontSize: 14, color: "#27251e", fontWeight: 500, letterSpacing: "-0.012em" }}>
+          <span style={{ fontSize: 14, color: "var(--c-fg)", fontWeight: 500, letterSpacing: "-0.012em" }}>
             obsidian
           </span>
         </div>
         <button
           onClick={() => setCollapsed(true)}
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 28, height: 28, borderRadius: 6, color: "#72706b" }}
+          style={{ width: 28, height: 28, borderRadius: 6, color: "var(--c-muted-fg)" }}
           aria-label="Collapse sidebar" title="Réduire (⌘\\)"
         >
           <PanelLeftClose size={16} strokeWidth={1.6} />
@@ -157,29 +157,29 @@ export function Sidebar() {
 
       <div className="flex shrink-0 flex-col gap-1 px-2 pb-2">
         <motion.button
-          whileHover={{ y: -1, backgroundColor: "#f1efea" }}
+          whileHover={{ y: -1, backgroundColor: "var(--c-surface)" }}
           whileTap={{ scale: 0.98 }}
           transition={springSnappy}
           onClick={handleNew}
           className="flex items-center justify-between px-2"
-          style={{ height: 36, borderRadius: 8, border: "1px solid #ece9e2", background: "#faf8f5", cursor: "pointer" }}
+          style={{ height: 36, borderRadius: 8, border: "1px solid var(--c-surface-strong)", background: "var(--c-bg)", cursor: "pointer" }}
         >
           <div className="flex items-center gap-2.5">
-            <SquarePen size={15} strokeWidth={1.6} style={{ color: "#27251e" }} />
-            <span style={{ fontSize: 13, color: "#27251e", fontWeight: 500 }}>New Thread</span>
+            <SquarePen size={15} strokeWidth={1.6} style={{ color: "var(--c-fg)" }} />
+            <span style={{ fontSize: 13, color: "var(--c-fg)", fontWeight: 500 }}>New Thread</span>
           </div>
           <span className="pplx-kbd">⌘K</span>
         </motion.button>
 
 
         <div className="relative">
-          <Search size={14} strokeWidth={1.6} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "#92918b" }} />
+          <Search size={14} strokeWidth={1.6} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "var(--c-muted)" }} />
           <input
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Search threads"
-            className="w-full outline-none placeholder:text-[#92918b] transition-colors focus:bg-[#f1efea]"
-            style={{ height: 32, fontSize: 13, color: "#27251e", borderRadius: 6, backgroundColor: "transparent", border: "none", paddingLeft: 30, paddingRight: 8 }}
+            className="w-full outline-none placeholder:text-[var(--c-muted)] transition-colors focus:bg-[var(--c-surface)]"
+            style={{ height: 32, fontSize: 13, color: "var(--c-fg)", borderRadius: 6, backgroundColor: "transparent", border: "none", paddingLeft: 30, paddingRight: 8 }}
           />
         </div>
       </div>
@@ -190,16 +190,16 @@ export function Sidebar() {
             to="/diagnostic"
             className="pplx-side-item flex w-full items-center gap-2.5 px-2 text-left"
             style={{
-              height: 32, borderRadius: 6, color: "#27251e", fontSize: 13,
+              height: 32, borderRadius: 6, color: "var(--c-fg)", fontSize: 13,
               fontWeight: onDiagnostic ? 600 : 500, letterSpacing: "-0.006em",
-              background: onDiagnostic ? "#ece9e2" : "transparent",
+              background: onDiagnostic ? "var(--c-surface-strong)" : "transparent",
             }}
           >
-            <ShieldCheck size={16} strokeWidth={1.7} style={{ color: "#27251e" }} />
+            <ShieldCheck size={16} strokeWidth={1.7} style={{ color: "var(--c-fg)" }} />
             <span>Diagnostic</span>
             <span style={{
               marginLeft: "auto", fontSize: 9, fontWeight: 600, padding: "2px 6px",
-              borderRadius: 4, background: "#27251e", color: "#faf8f5", letterSpacing: "0.04em",
+              borderRadius: 4, background: "var(--c-fg)", color: "var(--c-bg)", letterSpacing: "0.04em",
             }}>NEW</span>
           </Link>
         </nav>
@@ -251,7 +251,7 @@ export function Sidebar() {
             );
           })}
           {filtered.length === 0 && (
-            <div style={{ fontSize: 12, color: "#92918b", padding: "8px 8px" }}>
+            <div style={{ fontSize: 12, color: "var(--c-muted)", padding: "8px 8px" }}>
               {filter ? "No threads match." : "No threads yet."}
             </div>
           )}
@@ -259,7 +259,7 @@ export function Sidebar() {
 
       </div>
 
-      <div className="shrink-0 px-2 pb-2 pt-2" style={{ borderTop: "1px solid #ece9e2" }}>
+      <div className="shrink-0 px-2 pb-2 pt-2" style={{ borderTop: "1px solid var(--c-surface-strong)" }}>
         <UserMenu />
       </div>
     </motion.aside>
@@ -295,7 +295,7 @@ function ThreadRow({
         <motion.div
           layoutId="active-thread-bg"
           transition={springSoft}
-          style={{ position: "absolute", inset: 0, background: "#ece9e2", borderRadius: 6, zIndex: 0 }}
+          style={{ position: "absolute", inset: 0, background: "var(--c-surface-strong)", borderRadius: 6, zIndex: 0 }}
         />
       )}
       <div style={{ position: "relative", zIndex: 1, display: "flex", width: "100%", alignItems: "center" }}>
@@ -311,7 +311,7 @@ function ThreadRow({
             if (e.key === "Escape") { e.preventDefault(); onCommitRename(); }
           }}
           className="flex-1 outline-none"
-          style={{ height: 30, fontSize: 13, color: "#27251e", background: "#faf8f5", border: "1px solid #d4d2cc", borderRadius: 4, padding: "0 8px", margin: "0 2px" }}
+          style={{ height: 30, fontSize: 13, color: "var(--c-fg)", background: "var(--c-bg)", border: "1px solid var(--c-border-strong)", borderRadius: 4, padding: "0 8px", margin: "0 2px" }}
         />
       ) : (
         <Link
@@ -319,10 +319,10 @@ function ThreadRow({
           className="flex flex-1 items-center px-2"
           style={{ height: 30, minWidth: 0 }}
         >
-          {thread.pinned && <Pin size={10} strokeWidth={2} style={{ color: "#72706b", marginRight: 6, flexShrink: 0 }} />}
+          {thread.pinned && <Pin size={10} strokeWidth={2} style={{ color: "var(--c-muted-fg)", marginRight: 6, flexShrink: 0 }} />}
           <span
             className="truncate"
-            style={{ fontSize: 13, color: "#27251e", fontWeight: isActive ? 500 : 400, letterSpacing: "-0.006em", flex: 1 }}
+            style={{ fontSize: 13, color: "var(--c-fg)", fontWeight: isActive ? 500 : 400, letterSpacing: "-0.006em", flex: 1 }}
           >
             {thread.title}
           </span>
@@ -334,13 +334,13 @@ function ThreadRow({
             <button
               onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
               className="pplx-side-more mr-1 flex h-6 w-6 items-center justify-center"
-              style={{ borderRadius: 4, color: "#72706b", background: "transparent", border: "none" }}
+              style={{ borderRadius: 4, color: "var(--c-muted-fg)", background: "transparent", border: "none" }}
               aria-label="Thread options"
             >
               <MoreHorizontal size={14} strokeWidth={1.7} />
             </button>
           </PopoverTrigger>
-          <PopoverContent align="end" sideOffset={4} className="w-[180px] p-1" style={{ background: "#faf8f5", border: "1px solid #ece9e2", borderRadius: 10 }}>
+          <PopoverContent align="end" sideOffset={4} className="w-[180px] p-1" style={{ background: "var(--c-bg)", border: "1px solid var(--c-surface-strong)", borderRadius: 10 }}>
             <MenuItem icon={Pencil} label="Renommer" onClick={() => onStartRename(thread)} />
             <MenuItem
               icon={thread.pinned ? PinOff : Pin}
@@ -348,7 +348,7 @@ function ThreadRow({
               onClick={() => { togglePin(thread.id); toast.success(thread.pinned ? "Désépinglé" : "Épinglé"); }}
             />
             <MenuItem icon={FileDown} label="Exporter (.md)" onClick={() => downloadThreadMarkdown(thread)} />
-            <div style={{ height: 1, background: "#ece9e2", margin: "4px 0" }} />
+            <div style={{ height: 1, background: "var(--c-surface-strong)", margin: "4px 0" }} />
             <MenuItem icon={Trash2} label="Supprimer" danger onClick={() => onDelete(thread.id)} />
           </PopoverContent>
         </Popover>
@@ -364,7 +364,7 @@ function MenuItem({ icon: Icon, label, onClick, danger }: { icon: typeof Pin; la
     <button
       onClick={onClick}
       className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left pplx-side-item"
-      style={{ borderRadius: 6, fontSize: 13, color: danger ? "#b04a3f" : "#27251e", background: "transparent", border: "none", cursor: "pointer" }}
+      style={{ borderRadius: 6, fontSize: 13, color: danger ? "var(--c-danger)" : "var(--c-fg)", background: "transparent", border: "none", cursor: "pointer" }}
     >
       <Icon size={14} strokeWidth={1.7} />
       <span>{label}</span>
@@ -377,35 +377,35 @@ function UserMenu({ compact }: { compact?: boolean } = {}) {
   const trigger = compact ? (
     <button
       className="pplx-side-item flex items-center justify-center"
-      style={{ width: 32, height: 32, borderRadius: 9999, background: "#27251e", color: "#faf8f5", fontSize: 12, fontWeight: 500, border: "none", cursor: "pointer" }}
+      style={{ width: 32, height: 32, borderRadius: 9999, background: "var(--c-fg)", color: "var(--c-bg)", fontSize: 12, fontWeight: 500, border: "none", cursor: "pointer" }}
       aria-label="Account"
     >A</button>
   ) : (
     <button className="pplx-side-item flex w-full items-center gap-2.5 px-2" style={{ height: 44, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}>
       <div style={{
-        width: 26, height: 26, borderRadius: 9999, background: "#27251e",
+        width: 26, height: 26, borderRadius: 9999, background: "var(--c-fg)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        color: "#faf8f5", fontSize: 12, fontWeight: 500, flexShrink: 0,
+        color: "var(--c-bg)", fontSize: 12, fontWeight: 500, flexShrink: 0,
       }}>A</div>
       <div className="flex flex-1 flex-col items-start" style={{ lineHeight: 1.2 }}>
-        <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e" }}>Antoine</span>
-        <span style={{ fontSize: 11, color: "#72706b" }}>Free plan</span>
+        <span style={{ fontSize: 13, fontWeight: 500, color: "var(--c-fg)" }}>Antoine</span>
+        <span style={{ fontSize: 11, color: "var(--c-muted-fg)" }}>Free plan</span>
       </div>
-      <MoreHorizontal size={14} strokeWidth={1.6} style={{ color: "#72706b" }} />
+      <MoreHorizontal size={14} strokeWidth={1.6} style={{ color: "var(--c-muted-fg)" }} />
     </button>
   );
 
   return (
     <Popover>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-      <PopoverContent align="start" side="top" sideOffset={8} className="w-[220px] p-1" style={{ background: "#faf8f5", border: "1px solid #ece9e2", borderRadius: 10 }}>
-        <div style={{ padding: "8px 10px", borderBottom: "1px solid #ece9e2", marginBottom: 4 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#27251e" }}>Antoine</div>
-          <div style={{ fontSize: 11, color: "#72706b" }}>Free plan · Local-only</div>
+      <PopoverContent align="start" side="top" sideOffset={8} className="w-[220px] p-1" style={{ background: "var(--c-bg)", border: "1px solid var(--c-surface-strong)", borderRadius: 10 }}>
+        <div style={{ padding: "8px 10px", borderBottom: "1px solid var(--c-surface-strong)", marginBottom: 4 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--c-fg)" }}>Antoine</div>
+          <div style={{ fontSize: 11, color: "var(--c-muted-fg)" }}>Free plan · Local-only</div>
         </div>
         <MenuItem icon={Settings} label="Paramètres" onClick={() => toast("Paramètres bientôt disponibles")} />
         <MenuItem icon={Download} label="Exporter tout (JSON)" onClick={downloadAllThreadsJSON} />
-        <div style={{ height: 1, background: "#ece9e2", margin: "4px 0" }} />
+        <div style={{ height: 1, background: "var(--c-surface-strong)", margin: "4px 0" }} />
         <MenuItem
           icon={Trash2} label="Effacer toutes les conversations" danger
           onClick={() => {
