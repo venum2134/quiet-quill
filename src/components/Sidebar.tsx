@@ -91,11 +91,11 @@ export function Sidebar() {
   /* ---------- Collapsed sidebar ---------- */
   if (collapsed) {
     return (
-      <motion.aside layout initial={false} animate={{ width: 56 }} transition={springSoft} className="fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ backgroundColor: "var(--c-bg)", borderRight: "1px solid var(--c-surface-strong)", overflow: "hidden" }}>
+      <motion.aside layout initial={false} animate={{ width: 60 }} transition={springSoft} className="fixed left-0 top-0 flex h-screen flex-col items-center py-3" style={{ backgroundColor: "var(--c-bg)", borderRight: "1px solid var(--c-border)", overflow: "hidden", gap: 4 }}>
         <button
           onClick={() => setCollapsed(false)}
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", marginBottom: 6 }}
+          style={{ width: 36, height: 36, borderRadius: 8, color: "var(--c-fg)" }}
           aria-label="Expand sidebar"
           title="Étendre (⌘\\)"
         >
@@ -104,26 +104,25 @@ export function Sidebar() {
         <button
           onClick={handleNew}
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", marginBottom: 6 }}
-          aria-label="New Thread" title="Nouveau (⌘K)"
+          style={{ width: 36, height: 36, borderRadius: 8, color: "var(--c-fg)" }}
+          aria-label="New chat" title="Nouveau (⌘K)"
         >
           <SquarePen size={16} strokeWidth={1.6} />
         </button>
         <Link
           to="/diagnostic"
           className="pplx-side-item flex items-center justify-center"
-          style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", background: onDiagnostic ? "var(--c-surface-strong)" : "transparent" }}
+          style={{ width: 36, height: 36, borderRadius: 8, color: "var(--c-fg)", background: onDiagnostic ? "var(--c-surface)" : "transparent" }}
           aria-label="Diagnostic" title="Diagnostic"
         >
           <ShieldCheck size={16} strokeWidth={1.7} />
         </Link>
         <div style={{ flex: 1 }} />
-        <ThemeToggleCompact />
         <UserMenu compact />
       </motion.aside>
-
     );
   }
+
 
   /* ---------- Expanded sidebar ---------- */
   return (
