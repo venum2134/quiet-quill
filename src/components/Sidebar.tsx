@@ -252,7 +252,6 @@ export function Sidebar() {
       </div>
     </motion.aside>
   );
-  void searchOpen;
 }
 
 /* ---------- Section label (ChatGPT-style: lowercase, subtle) ---------- */
