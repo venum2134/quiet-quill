@@ -659,7 +659,8 @@ export function ChatView({ threadId, initialMessages }: Props) {
 
   if (isEmpty) {
     return (
-      <div className="flex min-h-screen flex-1 flex-col items-center justify-center px-8">
+      <div className="flex flex-1 flex-col items-center justify-center px-8">
+
         <div className="flex w-full flex-col items-center" style={{ maxWidth: 720 }}>
           <h1
             className="pplx-wordmark-in mb-3 text-center"
@@ -727,8 +728,8 @@ export function ChatView({ threadId, initialMessages }: Props) {
   const lastAssistantId = [...messages].reverse().find((m) => m.role === "assistant")?.id;
 
   return (
-    <div className="flex h-screen flex-1 flex-col">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 64 }}>
+    <div className="flex flex-1 flex-col" style={{ minHeight: 0, height: "calc(100vh - 48px)" }}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 24 }}>
         <div className="mx-auto flex flex-col gap-6 px-6 pb-8" style={{ maxWidth: 760 }}>
           <AnimatePresence initial={false}>
             {messages.map((m) => (
