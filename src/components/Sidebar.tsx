@@ -118,6 +118,7 @@ export function Sidebar() {
           <ShieldCheck size={16} strokeWidth={1.7} />
         </Link>
         <div style={{ flex: 1 }} />
+        <ThemeToggleCompact />
         <UserMenu compact />
       </motion.aside>
 
