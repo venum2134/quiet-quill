@@ -4,8 +4,9 @@ import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Search, PanelLeftClose, PanelLeftOpen, SquarePen, MoreHorizontal,
-  ShieldCheck, Settings, LogOut, Download, Trash2, Pin, PinOff, Pencil, FileDown,
+  ShieldCheck, Settings, LogOut, Download, Trash2, Pin, PinOff, Pencil, FileDown, Sun, Moon,
 } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 import {
   createThread, deleteThread, deleteAllThreads, downloadAllThreadsJSON,
   downloadThreadMarkdown, groupByDate, loadThreads, renameThread,
