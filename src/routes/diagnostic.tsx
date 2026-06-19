@@ -18,7 +18,7 @@ export const Route = createFileRoute("/diagnostic")({
 
 function DiagnosticPage() {
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#faf8f5" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "var(--c-bg)" }}>
       <Sidebar />
       <main className="relative flex min-h-screen flex-1 flex-col" style={{ marginLeft: 264 }}>
         <DiagnosticFlow />

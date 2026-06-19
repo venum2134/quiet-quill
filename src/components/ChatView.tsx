@@ -91,22 +91,22 @@ function CodeBlock({ className, children }: { className?: string; children?: Rea
     toast.success("Code copié");
   };
   return (
-    <div style={{ borderRadius: 10, overflow: "hidden", margin: "0 0 12px", border: "1px solid #1a1a1a" }}>
+    <div style={{ borderRadius: 10, overflow: "hidden", margin: "0 0 12px", border: "1px solid var(--c-inverse-hover)" }}>
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        background: "#1a1a1a", color: "#92918b", fontSize: 11, padding: "6px 12px",
+        background: "var(--c-inverse-hover)", color: "var(--c-muted)", fontSize: 11, padding: "6px 12px",
         fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", letterSpacing: "0.04em",
       }}>
         <span style={{ textTransform: "uppercase" }}>{lang}</span>
         <button
           onClick={onCopy}
           className="pplx-pill"
-          style={{ display: "flex", alignItems: "center", gap: 4, color: "#faf8f5", background: "transparent", border: "none", fontSize: 11, padding: "2px 6px", borderRadius: 4, cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: 4, color: "var(--c-bg)", background: "transparent", border: "none", fontSize: 11, padding: "2px 6px", borderRadius: 4, cursor: "pointer" }}
         >
           <Copy size={11} strokeWidth={1.8} /> Copy
         </button>
       </div>
-      <pre style={{ margin: 0, padding: "12px 14px", background: "#27251e", color: "#faf8f5", fontSize: 13, lineHeight: 1.55, overflowX: "auto" }}>
+      <pre style={{ margin: 0, padding: "12px 14px", background: "var(--c-fg)", color: "var(--c-bg)", fontSize: 13, lineHeight: 1.55, overflowX: "auto" }}>
         <code>{code}</code>
       </pre>
     </div>
@@ -135,7 +135,7 @@ function MessageBubble({
     if (editing) {
       return (
         <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="flex justify-end">
-          <div style={{ maxWidth: "85%", width: "100%", background: "#f1efea", borderRadius: 16, padding: 12 }}>
+          <div style={{ maxWidth: "85%", width: "100%", background: "var(--c-surface)", borderRadius: 16, padding: 12 }}>
 
             <textarea
               value={draft}
@@ -143,13 +143,13 @@ function MessageBubble({
               autoFocus
               className="w-full resize-none bg-transparent outline-none"
               rows={Math.min(8, draft.split("\n").length + 1)}
-              style={{ fontSize: 15, color: "#27251e", border: "none" }}
+              style={{ fontSize: 15, color: "var(--c-fg)", border: "none" }}
             />
             <div className="mt-2 flex justify-end gap-2">
-              <button onClick={() => { setEditing(false); setDraft(text); }} className="pplx-pill" style={{ padding: "4px 12px", borderRadius: 9999, fontSize: 13, background: "transparent", border: "1px solid #d4d2cc", color: "#27251e" }}>
+              <button onClick={() => { setEditing(false); setDraft(text); }} className="pplx-pill" style={{ padding: "4px 12px", borderRadius: 9999, fontSize: 13, background: "transparent", border: "1px solid var(--c-border-strong)", color: "var(--c-fg)" }}>
                 Annuler
               </button>
-              <button onClick={() => { onEdit(draft); setEditing(false); }} className="pplx-dark-pill" style={{ padding: "4px 12px", borderRadius: 9999, fontSize: 13, background: "#000", color: "#faf8f5", border: "none" }}>
+              <button onClick={() => { onEdit(draft); setEditing(false); }} className="pplx-dark-pill" style={{ padding: "4px 12px", borderRadius: 9999, fontSize: 13, background: "var(--c-inverse)", color: "var(--c-bg)", border: "none" }}>
                 Envoyer
               </button>
             </div>
@@ -164,19 +164,19 @@ function MessageBubble({
           {images.length > 0 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
               {images.map((img, i) => (
-                <img key={i} src={img.url} alt="" style={{ maxWidth: 200, maxHeight: 200, borderRadius: 10, border: "1px solid #ece9e2" }} />
+                <img key={i} src={img.url} alt="" style={{ maxWidth: 200, maxHeight: 200, borderRadius: 10, border: "1px solid var(--c-surface-strong)" }} />
               ))}
             </div>
           )}
           {text && (
-            <div style={{ background: "#f1efea", color: "#27251e", borderRadius: 16, padding: "10px 16px", fontSize: 15, lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            <div style={{ background: "var(--c-surface)", color: "var(--c-fg)", borderRadius: 16, padding: "10px 16px", fontSize: 15, lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
               {text}
             </div>
           )}
           <button
             onClick={() => { setDraft(text); setEditing(true); }}
             className="pplx-pill opacity-0 group-hover:opacity-100"
-            style={{ display: "flex", alignItems: "center", gap: 4, padding: "3px 8px", borderRadius: 6, fontSize: 11, color: "#72706b", background: "transparent", border: "none", transition: "opacity 150ms" }}
+            style={{ display: "flex", alignItems: "center", gap: 4, padding: "3px 8px", borderRadius: 6, fontSize: 11, color: "var(--c-muted-fg)", background: "transparent", border: "none", transition: "opacity 150ms" }}
             aria-label="Edit message"
           >
             <Pencil size={11} strokeWidth={1.7} /> Modifier
@@ -205,7 +205,7 @@ function MessageBubble({
 
   return (
     <motion.div variants={fadeInUp} initial="hidden" animate="show" exit="exit" layout="position" className="group">
-      <div className="pplx-markdown" style={{ color: "#27251e", fontSize: 15, lineHeight: 1.65 }}>
+      <div className="pplx-markdown" style={{ color: "var(--c-fg)", fontSize: 15, lineHeight: 1.65 }}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -241,7 +241,7 @@ function MessageBubble({
           <Volume2 size={13} strokeWidth={1.7} />
         </ActionBtn>
         {modelLabel && (
-          <span style={{ marginLeft: 8, fontSize: 11, color: "#92918b" }}>
+          <span style={{ marginLeft: 8, fontSize: 11, color: "var(--c-muted)" }}>
             {modelLabel}{durationMs ? ` · ${(durationMs / 1000).toFixed(1)}s` : ""}
           </span>
         )}
@@ -254,7 +254,7 @@ function MessageBubble({
 function ActionBtn({ children, label, onClick, active }: { children: React.ReactNode; label: string; onClick: () => void; active?: boolean }) {
   return (
     <motion.button
-      whileHover={{ scale: 1.08, backgroundColor: "#ece9e2" }}
+      whileHover={{ scale: 1.08, backgroundColor: "var(--c-surface-strong)" }}
       whileTap={{ scale: 0.92 }}
       transition={springSnappy}
       onClick={onClick}
@@ -263,8 +263,8 @@ function ActionBtn({ children, label, onClick, active }: { children: React.React
       style={{
         display: "flex", alignItems: "center", justifyContent: "center",
         width: 28, height: 28, borderRadius: 6, border: "none",
-        background: active ? "#ece9e2" : "transparent",
-        color: active ? "#27251e" : "#72706b", cursor: "pointer",
+        background: active ? "var(--c-surface-strong)" : "transparent",
+        color: active ? "var(--c-fg)" : "var(--c-muted-fg)", cursor: "pointer",
       }}
     >
       {children}
@@ -432,7 +432,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
             transition={{ duration: 0.16, ease: easeOut }}
             className="absolute left-0 right-0 z-20"
             style={{
-              bottom: "calc(100% + 8px)", background: "#faf8f5", border: "1px solid #ece9e2",
+              bottom: "calc(100% + 8px)", background: "var(--c-bg)", border: "1px solid var(--c-surface-strong)",
               borderRadius: 12, padding: 6, boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
             }}
           >
@@ -446,12 +446,12 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 onClick={() => runSlash(c)}
                 className="flex w-full items-center justify-between px-3 py-2 text-left"
                 style={{
-                  borderRadius: 8, background: i === slashIdx ? "#ece9e2" : "transparent",
+                  borderRadius: 8, background: i === slashIdx ? "var(--c-surface-strong)" : "transparent",
                   border: "none", cursor: "pointer",
                 }}
               >
-                <span style={{ fontSize: 13, fontWeight: 500, color: "#27251e", fontFamily: "ui-monospace, monospace" }}>{c.cmd}</span>
-                <span style={{ fontSize: 12, color: "#72706b" }}>{c.description}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: "var(--c-fg)", fontFamily: "ui-monospace, monospace" }}>{c.cmd}</span>
+                <span style={{ fontSize: 12, color: "var(--c-muted-fg)" }}>{c.description}</span>
               </motion.button>
             ))}
           </motion.div>
@@ -469,8 +469,8 @@ export function ChatView({ threadId, initialMessages }: Props) {
           if (e.dataTransfer.files.length > 0) addFiles(e.dataTransfer.files);
         }}
         style={{
-          backgroundColor: "#faf8f5",
-          border: `1px solid ${isDragging ? "#27251e" : "#ece9e2"}`,
+          backgroundColor: "var(--c-bg)",
+          border: `1px solid ${isDragging ? "var(--c-fg)" : "var(--c-surface-strong)"}`,
           borderRadius: 16, padding: 14,
         }}
       >
@@ -487,7 +487,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={springSnappy}
                   className="relative"
-                  style={{ borderRadius: 8, overflow: "hidden", border: "1px solid #ece9e2" }}
+                  style={{ borderRadius: 8, overflow: "hidden", border: "1px solid var(--c-surface-strong)" }}
                 >
                   <img src={a.url} alt={a.name} style={{ width: 60, height: 60, objectFit: "cover", display: "block" }} />
                   <motion.button
@@ -496,7 +496,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                     onClick={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
                     style={{
                       position: "absolute", top: 2, right: 2, width: 18, height: 18,
-                      borderRadius: 9999, background: "rgba(0,0,0,0.7)", color: "#faf8f5",
+                      borderRadius: 9999, background: "rgba(0,0,0,0.7)", color: "var(--c-bg)",
                       border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
                     }}
                     aria-label="Remove"
@@ -517,8 +517,8 @@ export function ChatView({ threadId, initialMessages }: Props) {
           onKeyDown={onKeyDown}
           placeholder={isEmpty ? "Pose une question cybersécurité, ou tape /diagnostic" : "Pose une question complémentaire…"}
           rows={isEmpty ? 2 : 1}
-          className="w-full resize-none bg-transparent outline-none placeholder:text-[#92918b]"
-          style={{ fontSize: 16, color: "#27251e", lineHeight: 1.5, border: "none", maxHeight: 200 }}
+          className="w-full resize-none bg-transparent outline-none placeholder:text-[var(--c-muted)]"
+          style={{ fontSize: 16, color: "var(--c-fg)", lineHeight: 1.5, border: "none", maxHeight: 200 }}
         />
 
         <div className="mt-2 flex items-center justify-between gap-2">
@@ -528,12 +528,12 @@ export function ChatView({ threadId, initialMessages }: Props) {
               onChange={(e) => { if (e.target.files) addFiles(e.target.files); e.target.value = ""; }}
             />
             <motion.button
-              whileHover={{ scale: 1.1, backgroundColor: "#ece9e2" }}
+              whileHover={{ scale: 1.1, backgroundColor: "var(--c-surface-strong)" }}
               whileTap={{ scale: 0.9 }}
               transition={springSnappy}
               onClick={() => fileInputRef.current?.click()}
               className="flex h-8 w-8 items-center justify-center"
-              style={{ borderRadius: 9999, color: "#72706b", background: "transparent", border: "none" }}
+              style={{ borderRadius: 9999, color: "var(--c-muted-fg)", background: "transparent", border: "none" }}
               aria-label="Attach image"
               title="Joindre une image"
             >
@@ -547,13 +547,13 @@ export function ChatView({ threadId, initialMessages }: Props) {
               <PopoverTrigger asChild>
                 <button
                   className="pplx-pill flex items-center gap-1 px-3 py-1.5"
-                  style={{ borderRadius: 9999, fontSize: 13, fontWeight: 500, color: "#27251e", background: "transparent", border: "none" }}
+                  style={{ borderRadius: 9999, fontSize: 13, fontWeight: 500, color: "var(--c-fg)", background: "transparent", border: "none" }}
                 >
                   <span>{model.short}</span>
                   <ChevronDown size={12} strokeWidth={2} />
                 </button>
               </PopoverTrigger>
-              <PopoverContent align="end" sideOffset={8} className="w-[300px] p-1" style={{ background: "#faf8f5", border: "1px solid #ece9e2", borderRadius: 12 }}>
+              <PopoverContent align="end" sideOffset={8} className="w-[300px] p-1" style={{ background: "var(--c-bg)", border: "1px solid var(--c-surface-strong)", borderRadius: 12 }}>
                 <motion.div
                   initial="hidden"
                   animate="show"
@@ -579,18 +579,18 @@ export function ChatView({ threadId, initialMessages }: Props) {
                           <motion.div
                             layoutId="model-hover-bg"
                             transition={springSnappy}
-                            style={{ position: "absolute", inset: 0, background: "#ece9e2", borderRadius: 8, zIndex: 0 }}
+                            style={{ position: "absolute", inset: 0, background: "var(--c-surface-strong)", borderRadius: 8, zIndex: 0 }}
                           />
                         )}
                         <div style={{ flex: 1, position: "relative", zIndex: 1 }}>
                           <motion.div
                             animate={{ x: hovered ? 3 : 0 }}
                             transition={springSnappy}
-                            style={{ fontSize: 13, fontWeight: 600, color: "#27251e" }}
+                            style={{ fontSize: 13, fontWeight: 600, color: "var(--c-fg)" }}
                           >
                             {m.label}
                           </motion.div>
-                          <div style={{ fontSize: 12, color: "#72706b", marginTop: 2 }}>{m.description}</div>
+                          <div style={{ fontSize: 12, color: "var(--c-muted-fg)", marginTop: 2 }}>{m.description}</div>
                         </div>
                         <AnimatePresence>
                           {active && (
@@ -602,7 +602,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                               transition={springSnappy}
                               style={{ position: "relative", zIndex: 1, marginTop: 2 }}
                             >
-                              <Check size={14} strokeWidth={2} style={{ color: "#27251e" }} />
+                              <Check size={14} strokeWidth={2} style={{ color: "var(--c-fg)" }} />
                             </motion.span>
                           )}
                         </AnimatePresence>
@@ -625,11 +625,11 @@ export function ChatView({ threadId, initialMessages }: Props) {
                   whileTap={{ scale: 0.92 }}
                   onClick={() => stop()}
                   className="flex h-9 w-9 items-center justify-center"
-                  style={{ borderRadius: 9999, backgroundColor: "#000000", color: "#faf8f5", border: "none" }}
+                  style={{ borderRadius: 9999, backgroundColor: "var(--c-inverse)", color: "var(--c-bg)", border: "none" }}
                   aria-label="Stop (Esc)"
                   title="Arrêter (Esc)"
                 >
-                  <Square size={14} strokeWidth={2.2} fill="#faf8f5" />
+                  <Square size={14} strokeWidth={2.2} fill="var(--c-bg)" />
                 </motion.button>
               ) : (
                 <motion.button
@@ -643,7 +643,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
                   onClick={() => submit(input)}
                   disabled={!input.trim() && attachments.length === 0}
                   className="flex h-9 w-9 items-center justify-center"
-                  style={{ borderRadius: 9999, backgroundColor: (input.trim() || attachments.length > 0) ? "#000000" : "#d4d2cc", color: "#faf8f5", border: "none" }}
+                  style={{ borderRadius: 9999, backgroundColor: (input.trim() || attachments.length > 0) ? "var(--c-inverse)" : "var(--c-border-strong)", color: "var(--c-bg)", border: "none" }}
                   aria-label="Submit"
                 >
                   <ArrowRight size={16} strokeWidth={2.2} />
@@ -663,13 +663,13 @@ export function ChatView({ threadId, initialMessages }: Props) {
         <div className="flex w-full flex-col items-center" style={{ maxWidth: 720 }}>
           <h1
             className="pplx-wordmark-in mb-3 text-center"
-            style={{ fontSize: 60, fontWeight: 450, color: "#27251e", lineHeight: 1, fontVariationSettings: '"wght" 450' }}
+            style={{ fontSize: 60, fontWeight: 450, color: "var(--c-fg)", lineHeight: 1, fontVariationSettings: '"wght" 450' }}
           >
             obsidian
           </h1>
           <p
             className="pplx-fade-up mb-8 text-center"
-            style={{ fontSize: 14, color: "#72706b", animationDelay: "80ms", maxWidth: 460 }}
+            style={{ fontSize: 14, color: "var(--c-muted-fg)", animationDelay: "80ms", maxWidth: 460 }}
           >
             Le pentest automatisé, démocratisé. Pose une question, ou lance un diagnostic sur ton domaine.
           </p>
@@ -677,7 +677,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
           <Link
             to="/diagnostic"
             className="pplx-fade-up pplx-dark-pill mb-6 flex items-center gap-2 px-5 py-2.5"
-            style={{ animationDelay: "100ms", borderRadius: 9999, fontSize: 14, fontWeight: 500, color: "#faf8f5", background: "#000000", border: "none" }}
+            style={{ animationDelay: "100ms", borderRadius: 9999, fontSize: 14, fontWeight: 500, color: "var(--c-bg)", background: "var(--c-inverse)", border: "none" }}
           >
             <ShieldCheck size={15} strokeWidth={1.8} />
             Lancer un diagnostic
@@ -697,18 +697,18 @@ export function ChatView({ threadId, initialMessages }: Props) {
               <motion.button
                 key={s.label}
                 variants={fadeInUp}
-                whileHover={{ y: -3, borderColor: "#d4d2cc" }}
+                whileHover={{ y: -3, borderColor: "var(--c-border-strong)" }}
                 whileTap={{ scale: 0.98 }}
                 transition={springSnappy}
                 onClick={() => submit(s.prompt)}
                 className="flex shrink-0 flex-col gap-3 p-4 text-left"
-                style={{ width: 180, borderRadius: 12, backgroundColor: "#faf8f5", border: "1px solid #ece9e2", cursor: "pointer" }}
+                style={{ width: 180, borderRadius: 12, backgroundColor: "var(--c-bg)", border: "1px solid var(--c-surface-strong)", cursor: "pointer" }}
               >
                 <div className="flex items-center gap-2">
-                  <s.icon size={16} strokeWidth={1.5} style={{ color: "#27251e" }} />
-                  <span style={{ fontSize: 14, color: "#27251e", fontWeight: 500 }}>{s.label}</span>
+                  <s.icon size={16} strokeWidth={1.5} style={{ color: "var(--c-fg)" }} />
+                  <span style={{ fontSize: 14, color: "var(--c-fg)", fontWeight: 500 }}>{s.label}</span>
                 </div>
-                <div style={{ fontSize: 12, color: "#72706b", lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: "var(--c-muted-fg)", lineHeight: 1.4 }}>
                   {s.prompt}
                 </div>
               </motion.button>
@@ -717,7 +717,7 @@ export function ChatView({ threadId, initialMessages }: Props) {
 
         </div>
 
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center" style={{ fontSize: 12, color: "#92918b" }}>
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-center" style={{ fontSize: 12, color: "var(--c-muted)" }}>
           Obsidian peut produire des informations inexactes. Vérifie toujours les recommandations critiques.
         </div>
       </div>
@@ -751,19 +751,19 @@ export function ChatView({ threadId, initialMessages }: Props) {
                 initial="hidden"
                 animate="show"
                 exit="exit"
-                style={{ color: "#72706b", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}
+                style={{ color: "var(--c-muted-fg)", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}
               >
                 <motion.span
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ width: 6, height: 6, borderRadius: 9999, background: "#27251e", display: "inline-block" }}
+                  style={{ width: 6, height: 6, borderRadius: 9999, background: "var(--c-fg)", display: "inline-block" }}
                 />
                 <span className="pplx-shimmer">Réflexion en cours…</span>
               </motion.div>
             )}
           </AnimatePresence>
           {error && (
-            <motion.div variants={fadeInUp} initial="hidden" animate="show" style={{ background: "#f1efea", border: "1px solid #ece9e2", borderRadius: 12, padding: 12, fontSize: 13, color: "#27251e" }}>
+            <motion.div variants={fadeInUp} initial="hidden" animate="show" style={{ background: "var(--c-surface)", border: "1px solid var(--c-surface-strong)", borderRadius: 12, padding: 12, fontSize: 13, color: "var(--c-fg)" }}>
               {error.message || "Une erreur est survenue. Réessaie."}
             </motion.div>
           )}
@@ -771,10 +771,10 @@ export function ChatView({ threadId, initialMessages }: Props) {
 
       </div>
 
-      <div className="shrink-0 px-6 pb-6 pt-2" style={{ background: "linear-gradient(to bottom, rgba(250,248,245,0), #faf8f5 30%)" }}>
+      <div className="shrink-0 px-6 pb-6 pt-2" style={{ background: "linear-gradient(to bottom, rgba(var(--c-bg-rgb), 0), var(--c-bg) 30%)" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
           {inputBox}
-          <div className="mt-2 text-center" style={{ fontSize: 11, color: "#92918b" }}>
+          <div className="mt-2 text-center" style={{ fontSize: 11, color: "var(--c-muted)" }}>
             Obsidian peut produire des informations inexactes. Esc pour arrêter.
           </div>
         </div>
