@@ -125,24 +125,27 @@ export function Sidebar() {
 
 
   /* ---------- Expanded sidebar ---------- */
+  const [searchOpen, setSearchOpen] = [filter.length > 0, undefined] as const; // placeholder, real state below
+  // (real state declared above via useState — see hook section)
+
   return (
     <motion.aside
       layout
       initial={false}
-      animate={{ width: 264 }}
+      animate={{ width: 260 }}
       transition={springSoft}
       className="fixed left-0 top-0 flex h-screen flex-col"
       style={{ backgroundColor: "var(--c-bg)", overflow: "hidden" }}
     >
 
-      <div className="flex shrink-0 items-center justify-between px-3" style={{ height: 52 }}>
+      <div className="flex shrink-0 items-center justify-between" style={{ height: 48, paddingLeft: 12, paddingRight: 8 }}>
         <div className="flex items-center gap-2">
           <div style={{
-            width: 22, height: 22, borderRadius: 6, background: "var(--c-fg)",
+            width: 24, height: 24, borderRadius: 6, background: "var(--c-fg)",
             display: "flex", alignItems: "center", justifyContent: "center",
             color: "var(--c-bg)", fontSize: 12, fontWeight: 600,
           }}>◆</div>
-          <span style={{ fontSize: 14, color: "var(--c-fg)", fontWeight: 500, letterSpacing: "-0.012em" }}>
+          <span style={{ fontSize: 14, color: "var(--c-fg)", fontWeight: 600, letterSpacing: "-0.012em" }}>
             obsidian
           </span>
         </div>
@@ -156,55 +159,43 @@ export function Sidebar() {
         </button>
       </div>
 
-      <div className="flex shrink-0 flex-col gap-1 px-2 pb-2">
-        <motion.button
-          whileHover={{ y: -1, backgroundColor: "var(--c-surface)" }}
-          whileTap={{ scale: 0.98 }}
-          transition={springSnappy}
+      {/* ChatGPT-style nav rows */}
+      <div className="flex shrink-0 flex-col" style={{ padding: "4px 8px 8px" }}>
+        <button
           onClick={handleNew}
-          className="flex items-center justify-between px-2"
-          style={{ height: 36, borderRadius: 8, border: "1px solid var(--c-surface-strong)", background: "var(--c-bg)", cursor: "pointer" }}
+          className="pplx-side-item flex w-full items-center justify-between"
+          style={{ height: 36, padding: "0 8px", borderRadius: 8, background: "transparent", border: "none", cursor: "pointer" }}
         >
-          <div className="flex items-center gap-2.5">
-            <SquarePen size={15} strokeWidth={1.6} style={{ color: "var(--c-fg)" }} />
-            <span style={{ fontSize: 13, color: "var(--c-fg)", fontWeight: 500 }}>New Thread</span>
-          </div>
+          <span className="flex items-center" style={{ gap: 10 }}>
+            <SquarePen size={16} strokeWidth={1.7} style={{ color: "var(--c-fg)" }} />
+            <span style={{ fontSize: 14, color: "var(--c-fg)", fontWeight: 500 }}>New chat</span>
+          </span>
           <span className="pplx-kbd">⌘K</span>
-        </motion.button>
+        </button>
 
+        <SearchRow filter={filter} setFilter={setFilter} />
 
-        <div className="relative">
-          <Search size={14} strokeWidth={1.6} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "var(--c-muted)" }} />
-          <input
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="Search threads"
-            className="w-full outline-none placeholder:text-[var(--c-muted)] transition-colors focus:bg-[var(--c-surface)]"
-            style={{ height: 32, fontSize: 13, color: "var(--c-fg)", borderRadius: 6, backgroundColor: "transparent", border: "none", paddingLeft: 30, paddingRight: 8 }}
-          />
-        </div>
+        <Link
+          to="/diagnostic"
+          className="pplx-side-item flex w-full items-center justify-between"
+          style={{
+            height: 36, padding: "0 8px", borderRadius: 8,
+            background: onDiagnostic ? "var(--c-surface)" : "transparent",
+            color: "var(--c-fg)",
+          }}
+        >
+          <span className="flex items-center" style={{ gap: 10 }}>
+            <ShieldCheck size={16} strokeWidth={1.7} style={{ color: "var(--c-fg)" }} />
+            <span style={{ fontSize: 14, color: "var(--c-fg)", fontWeight: 500 }}>Diagnostic</span>
+          </span>
+          <span style={{
+            fontSize: 9, fontWeight: 600, padding: "2px 5px",
+            borderRadius: 4, background: "var(--c-fg)", color: "var(--c-bg)", letterSpacing: "0.04em",
+          }}>NEW</span>
+        </Link>
       </div>
 
-      <div className="pplx-sidebar-scroll flex-1 overflow-y-auto px-2 pb-2">
-        <nav className="flex flex-col gap-0.5 pb-3">
-          <Link
-            to="/diagnostic"
-            className="pplx-side-item flex w-full items-center gap-2.5 px-2 text-left"
-            style={{
-              height: 32, borderRadius: 6, color: "var(--c-fg)", fontSize: 13,
-              fontWeight: onDiagnostic ? 600 : 500, letterSpacing: "-0.006em",
-              background: onDiagnostic ? "var(--c-surface-strong)" : "transparent",
-            }}
-          >
-            <ShieldCheck size={16} strokeWidth={1.7} style={{ color: "var(--c-fg)" }} />
-            <span>Diagnostic</span>
-            <span style={{
-              marginLeft: "auto", fontSize: 9, fontWeight: 600, padding: "2px 6px",
-              borderRadius: 4, background: "var(--c-fg)", color: "var(--c-bg)", letterSpacing: "0.04em",
-            }}>NEW</span>
-          </Link>
-        </nav>
-
+      <div className="pplx-sidebar-scroll flex-1 overflow-y-auto" style={{ padding: "0 8px 8px" }}>
         {/* Pinned */}
         <AnimatePresence initial={false}>
           {pinned.length > 0 && (
@@ -215,9 +206,10 @@ export function Sidebar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.22, ease: easeOut }}
-              className="flex flex-col gap-0.5 overflow-hidden pb-3"
+              className="flex flex-col overflow-hidden"
+              style={{ paddingBottom: 8 }}
             >
-              <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>Pinned</div>
+              <SectionLabel>Pinned</SectionLabel>
               <AnimatePresence initial={false}>
                 {pinned.map((t) => (
                   <ThreadRow
@@ -231,14 +223,12 @@ export function Sidebar() {
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col gap-3 pt-2">
+        <div className="flex flex-col">
           {Object.entries(groups).map(([group, items]) => {
             if (items.length === 0) return null;
             return (
-              <motion.div key={group} layout className="flex flex-col gap-0.5">
-                <div className="pplx-section-label" style={{ marginBottom: 4, lineHeight: "20px" }}>
-                  {group}
-                </div>
+              <motion.div key={group} layout className="flex flex-col" style={{ paddingBottom: 8 }}>
+                <SectionLabel>{group}</SectionLabel>
                 <AnimatePresence initial={false}>
                   {items.map((t) => (
                     <ThreadRow
@@ -252,7 +242,7 @@ export function Sidebar() {
             );
           })}
           {filtered.length === 0 && (
-            <div style={{ fontSize: 12, color: "var(--c-muted)", padding: "8px 8px" }}>
+            <div style={{ fontSize: 12, color: "var(--c-muted)", padding: "8px" }}>
               {filter ? "No threads match." : "No threads yet."}
             </div>
           )}
@@ -260,12 +250,59 @@ export function Sidebar() {
 
       </div>
 
-      <div className="shrink-0 px-2 pb-2 pt-2" style={{ borderTop: "1px solid var(--c-surface-strong)" }}>
+      <div className="shrink-0" style={{ padding: "6px 8px 8px", borderTop: "1px solid var(--c-border)" }}>
         <UserMenu />
       </div>
     </motion.aside>
   );
+  void searchOpen;
 }
+
+/* ---------- Section label (ChatGPT-style: lowercase, subtle) ---------- */
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{
+      fontSize: 12, fontWeight: 500, color: "var(--c-muted-fg)",
+      padding: "10px 8px 4px", letterSpacing: 0,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+/* ---------- Search row: nav-line that expands into an input on focus ---------- */
+function SearchRow({ filter, setFilter }: { filter: string; setFilter: (s: string) => void }) {
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const expanded = focused || filter.length > 0;
+
+  return (
+    <div
+      className="pplx-side-item flex w-full items-center"
+      style={{ height: 36, padding: "0 8px", borderRadius: 8, cursor: "text" }}
+      onClick={() => inputRef.current?.focus()}
+    >
+      <Search size={16} strokeWidth={1.7} style={{ color: "var(--c-fg)", marginRight: 10, flexShrink: 0 }} />
+      <input
+        ref={inputRef}
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") { setFilter(""); inputRef.current?.blur(); }
+        }}
+        placeholder={expanded ? "Filtrer les conversations…" : "Search chats"}
+        className="flex-1 bg-transparent outline-none"
+        style={{
+          fontSize: 14, color: "var(--c-fg)", fontWeight: expanded ? 400 : 500,
+          border: "none", minWidth: 0,
+        }}
+      />
+    </div>
+  );
+}
+
 
 /* ---------- Thread row with menu ---------- */
 function ThreadRow({
