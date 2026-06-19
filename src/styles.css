@@ -31,7 +31,9 @@
 :root {
   --c-bg: #faf8f5;
   --c-bg-rgb: 250, 248, 245;
-  --c-sidebar: #faf8f5;
+  --c-sidebar: #f4f1ec;
+  --c-sidebar-hover: rgba(0, 0, 0, 0.05);
+  --c-sidebar-active: rgba(0, 0, 0, 0.07);
   --c-fg: #27251e;
   --c-fg-rgb: 39, 37, 30;
   --c-surface: #f1efea;
@@ -58,6 +60,8 @@ html.dark {
   --c-bg: #212121;
   --c-bg-rgb: 33, 33, 33;
   --c-sidebar: #171717;
+  --c-sidebar-hover: rgba(255, 255, 255, 0.06);
+  --c-sidebar-active: rgba(255, 255, 255, 0.10);
   --c-fg: #ececec;
   --c-fg-rgb: 236, 236, 236;
   --c-surface: #2f2f2f;
@@ -200,11 +204,12 @@ html.dark {
 .pplx-sidebar-scroll:hover::-webkit-scrollbar-thumb { background: var(--c-border-strong); }
 
 .pplx-side-item {
-  transition: background-color 140ms var(--ease-out-soft), color 140ms var(--ease-out-soft);
+  transition: background-color 120ms var(--ease-out-soft), color 120ms var(--ease-out-soft);
 }
-.pplx-side-item:hover { background-color: var(--c-surface-strong); }
+.pplx-side-item:hover { background-color: var(--c-sidebar-hover); }
 .pplx-side-item .pplx-side-more { opacity: 0; transition: opacity 150ms var(--ease-out-soft); }
 .pplx-side-item:hover .pplx-side-more { opacity: 1; }
+.pplx-side-item .pplx-side-more:hover { background-color: var(--c-sidebar-active); }
 
 .pplx-kbd {
   font-variant-numeric: tabular-nums;
