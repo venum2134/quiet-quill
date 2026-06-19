@@ -250,34 +250,27 @@ export function DiagnosticFlow() {
   };
 
   return (
-    <div className="flex h-screen flex-1 flex-col">
-      {/* Header band */}
-      <div
-        className="pplx-fade-in absolute left-0 right-0 top-0 flex items-center justify-between px-6"
-        style={{ height: 56, paddingLeft: 288, background: "linear-gradient(to bottom, var(--c-bg) 65%, rgba(var(--c-bg-rgb), 0))", zIndex: 5 }}
-      >
-        <div className="flex items-center gap-2" style={{ color: "var(--c-fg)" }}>
-          <ShieldCheck size={16} strokeWidth={1.7} />
-          <span style={{ fontSize: 13, fontWeight: 500 }}>Diagnostic</span>
-          <span style={{ fontSize: 12, color: "var(--c-muted)", marginLeft: 6 }}>
-            {state.domain ? `· ${state.domain}` : "· nouvelle analyse"}
-          </span>
-        </div>
-        <button
-          onClick={handleReset}
-          className="pplx-pill flex items-center gap-1.5 px-3 py-1.5"
-          style={{ borderRadius: 9999, border: "1px solid var(--c-surface-strong)", fontSize: 12, fontWeight: 500, color: "var(--c-fg)", background: "transparent" }}
-        >
-          <RefreshCw size={12} strokeWidth={1.7} />
-          Réinitialiser
-        </button>
-      </div>
-
+    <div className="flex flex-1 flex-col" style={{ minHeight: 0, height: "calc(100vh - 48px)" }}>
       {/* Scrollable bubbles */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 80 }}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingTop: 24 }}>
         <div className="mx-auto flex flex-col gap-5 px-6 pb-8" style={{ maxWidth: 760 }}>
+          {/* Inline toolbar: domain hint + reset */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2" style={{ color: "var(--c-muted-fg)", fontSize: 12 }}>
+              {state.domain ? `· ${state.domain}` : "· nouvelle analyse"}
+            </div>
+            <button
+              onClick={handleReset}
+              className="pplx-pill flex items-center gap-1.5 px-3 py-1.5"
+              style={{ borderRadius: 9999, border: "1px solid var(--c-surface-strong)", fontSize: 12, fontWeight: 500, color: "var(--c-fg)", background: "transparent" }}
+            >
+              <RefreshCw size={12} strokeWidth={1.7} />
+              Réinitialiser
+            </button>
+          </div>
           <AnimatePresence initial={false}>
             {state.bubbles.map((b) => (
+
               <motion.div
                 key={b.id}
                 layout
