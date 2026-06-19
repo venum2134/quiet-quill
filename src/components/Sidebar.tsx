@@ -406,6 +406,7 @@ function UserMenu({ compact }: { compact?: boolean } = {}) {
           <div style={{ fontSize: 11, color: "var(--c-muted-fg)" }}>Free plan · Local-only</div>
         </div>
         <MenuItem icon={Settings} label="Paramètres" onClick={() => toast("Paramètres bientôt disponibles")} />
+        <ThemeToggleMenuItem />
         <MenuItem icon={Download} label="Exporter tout (JSON)" onClick={downloadAllThreadsJSON} />
         <div style={{ height: 1, background: "var(--c-surface-strong)", margin: "4px 0" }} />
         <MenuItem
