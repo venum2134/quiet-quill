@@ -1,74 +1,86 @@
-# Toggle thème en haut + sidebar style ChatGPT
+# Sidebar pixel-perfect — clone ChatGPT
 
-Deux changements coordonnés : déplacer le switch de thème dans une barre supérieure (visible en permanence), et resserrer la sidebar pour qu'elle ressemble à celle de ChatGPT (densité, typo, hiérarchie).
+Objectif : aligner `src/components/Sidebar.tsx` au pixel près sur la sidebar ChatGPT de la capture (mode clair + sombre).
 
-## 1. Barre supérieure (top header)
+## Spécifications visuelles exactes
 
-Nouvelle barre fine au-dessus du contenu principal (chat + diagnostic), à droite de la sidebar.
+### Conteneur
+- Largeur étendue : **260px** (inchangé)
+- Background : `#f9f9f9` (light) / `#171717` (dark) — token `--c-sidebar-bg` dédié (différent de `--c-bg` du chat)
+- Pas de bordure droite visible (ChatGPT n'en a pas, juste un décalage de couleur)
+- Padding global : **8px** horizontal
 
-- Hauteur 48 px, fond `var(--c-bg)`, bordure basse `1px solid var(--c-border)`, padding horizontal 16 px.
-- À gauche : titre contextuel (`Obsidian` sur l'accueil, titre du thread sur `/$threadId`, `Diagnostic` sur `/diagnostic`) — 14 px, semibold, `var(--c-fg)`.
-- À droite : bouton toggle thème (icône `Sun`/`Moon` Lucide, 16 px, bouton rond 32×32, hover `var(--c-surface)`), avec `title` "Mode clair"/"Mode sombre".
-- Composant `TopBar` réutilisable monté dans `ChatView` et `DiagnosticFlow` (et la home `index.tsx`).
-- Retrait du toggle thème du `UserMenu` et de la version compacte de la sidebar (devient redondant).
+### Header (logo + collapse)
+- Hauteur : **44px**
+- Logo Obsidian 24×24 à gauche, padding-left 10px
+- Icône collapse `PanelLeftClose` 20px stroke 1.5 à droite, bouton 32×32, hover `rgba(0,0,0,0.05)` / `rgba(255,255,255,0.05)`
+- Pas de label "obsidian" textuel à côté du logo (ChatGPT n'affiche que l'icône) — OU garder le wordmark en 14px/600 selon préférence
 
-Le hook `useTheme` reste tel quel ; seule la position de l'UI change.
+### Nav rows (New chat / Search / Diagnostic)
+- Hauteur : **36px** (inchangé)
+- Padding interne : **10px** horizontal
+- Border-radius : **8px**
+- Gap icône↔label : **10px**
+- Icônes : **20px**, stroke **1.5** (actuellement 16/1.7 → trop fin)
+- Label : **14px**, font-weight **400** (pas 500 — ChatGPT est régulier), letter-spacing **-0.01em**
+- Hover : `rgba(0,0,0,0.05)` / `rgba(255,255,255,0.05)` — token `--c-sidebar-hover`
+- Raccourci `⌘K` : 11px, color muted, padding 2px 6px, pas de bordure
+- Badge `NEW` : retirer (ChatGPT n'en a pas) OU 10px/600 uppercase si conservé
 
-## 2. Sidebar style ChatGPT
+### Section labels (Today / Yesterday / Previous 7 days…)
+- Font-size : **12px**
+- Font-weight : **600** (actuellement 500)
+- Color : `--c-muted-fg` plus contrasté (~`#8e8ea0`)
+- Padding : **16px 10px 6px** (plus d'espace au-dessus)
+- Texte : "Today", "Yesterday", "Previous 7 days", "Previous 30 days" (anglais, casse Title Case)
 
-Resserrer la sidebar (cf. capture) — moins de bordures, plus de densité, typo plus marquée.
+### Thread rows
+- Hauteur : **36px** (actuellement 30 — trop dense)
+- Padding : **0 10px**
+- Border-radius : **8px**
+- Font-size : **14px** (actuellement 13)
+- Font-weight : **400** toujours (même actif — ChatGPT ne bolde pas)
+- Color : `--c-fg` (pas muted)
+- Letter-spacing : **-0.01em**
+- État actif : background `rgba(0,0,0,0.06)` / `rgba(255,255,255,0.08)` — token `--c-sidebar-active`
+- Hover : `--c-sidebar-hover`
+- Truncate avec ellipsis
+- Bouton `MoreHorizontal` : 24×24, icône 16px, visible uniquement au hover/actif, padding-right 4px
 
-### Largeur + structure
-- Largeur étendue : `260 px` (au lieu de 264) — détail.
-- Padding interne uniformisé : `8 px` horizontal sur toute la hauteur.
+### Footer (UserMenu)
+- Hauteur : **52px** (actuellement 40)
+- Pas de `border-top` (ChatGPT n'en a pas)
+- Avatar : **28×28** (actuellement 24)
+- Nom : 14px/500
+- Sous-label "Free plan" : retirer (ChatGPT affiche juste le nom) ou garder 12px muted
 
-### En-tête (logo + collapse)
-- Hauteur 48 px (au lieu de 52).
-- Logo `◆` carré 28×28 + libellé `obsidian` 14 px / semibold (déjà OK).
-- Bouton collapse à droite, 28×28, icône 16, hover `var(--c-surface)`.
+### Collapsed (60px)
+- Boutons 36×36, icônes 20px stroke 1.5
+- Gap : 4px
 
-### Bloc de navigation (style ChatGPT)
-Remplacer le gros bouton bordé "New Thread" + l'input de recherche autonome par **trois lignes nav identiques** (comme "New chat", "Search chats", "Library" chez ChatGPT) :
+## Nouveaux tokens CSS (src/styles.css)
 
+```css
+:root {
+  --c-sidebar-bg: #f9f9f9;
+  --c-sidebar-hover: rgba(0,0,0,0.05);
+  --c-sidebar-active: rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+  --c-sidebar-bg: #171717;
+  --c-sidebar-hover: rgba(255,255,255,0.05);
+  --c-sidebar-active: rgba(255,255,255,0.08);
+}
 ```
-[icon] New chat          ⌘K
-[icon] Search chats
-[icon] Diagnostic        NEW
-```
 
-- Chaque ligne : hauteur 36 px, padding `0 8px`, gap icône/texte 10 px, font-size 14 px, weight 500, `border-radius 8px`, hover `var(--c-surface)`.
-- Icônes 16 px, stroke 1.7, alignées verticalement.
-- "Search chats" ouvre la recherche : au clic, la ligne se transforme en input inline (même hauteur, même style) avec focus auto ; Escape ou blur la referme. Filtrage existant conservé.
-- Raccourci `⌘K` rendu à droite en `pplx-kbd` uniquement sur "New chat".
-- Badge `NEW` conservé sur Diagnostic, plus discret (10 px, padding 2/5, `border-radius 4px`).
+## Fichiers touchés
+- `src/styles.css` — ajout des 3 tokens sidebar
+- `src/components/Sidebar.tsx` — application des valeurs ci-dessus (header, nav, SearchRow, SectionLabel, ThreadRow, UserMenu, version collapsed)
 
-### Liste des threads
-- Label de section : "Chats" en bas de casse, 12 px, weight 500, color `var(--c-muted)`, padding `12px 8px 6px` (au lieu de l'actuel uppercase 11 px). Les sous-groupes par date (Today, Yesterday…) suivent le même style.
-- Lignes thread : hauteur **32 px** (au lieu de 30 implicite + paddings variables), padding `0 8px`, font-size 14 px, weight 400, couleur `var(--c-fg)`.
-- État actif : fond `var(--c-surface-strong)`, weight inchangé (pas de gras) — ChatGPT ne met pas en gras l'actif.
-- Hover : fond `var(--c-surface)`.
-- Icône Pin (si épinglé) : 10 px, marge droite 6 px.
-- Bouton `MoreHorizontal` : visible au hover uniquement (déjà OK), 24×24, marge droite 4 px.
+## Décisions à confirmer
+1. **Wordmark "obsidian"** à côté du logo : garder ou retirer (ChatGPT ne montre que l'icône) ?
+2. **Badge `NEW`** sur Diagnostic : garder ou retirer ?
+3. **Sous-label "Free plan"** : garder ou retirer ?
+4. **Langue des section labels** : anglais ("Today", "Yesterday"…) comme ChatGPT, ou français ?
 
-### Pied (user menu)
-- Conservé tel quel mais hauteur réduite à 40 px, avatar 24×24, gap 10 px, séparateur supérieur `1px solid var(--c-border)` plus discret.
-- Retrait du `MoreHorizontal` à droite (ChatGPT n'en a pas — on garde juste l'avatar + nom + plan, tout est cliquable pour ouvrir le menu).
-
-### Sidebar compacte (collapsed)
-- Largeur 60 px (au lieu de 56).
-- Icônes 16 px, boutons 36×36, espacement vertical 4 px.
-- Suppression du bouton thème compact (déplacé dans la TopBar).
-
-## 3. Détails techniques
-
-- Nouveau composant `src/components/TopBar.tsx` exporte `TopBar({ title }: { title: string })`.
-- `ChatView` reçoit le titre du thread actif et le passe à `<TopBar>` ; `DiagnosticFlow` passe `"Diagnostic"` ; `index.tsx` passe `"Obsidian"`.
-- Le padding `pl-[264px]` / `pl-[60px]` (selon collapsed) des routes reste géré comme aujourd'hui ; la TopBar est rendue à l'intérieur du conteneur principal, pas au-dessus de la sidebar.
-- `Sidebar.tsx` : refactor structurel des blocs nav + threads + footer ; pas de changement de logique métier (création/suppression/épinglage/renommage/export inchangés).
-- Aucune nouvelle dépendance.
-
-## Hors scope
-
-- Pas de changement du contenu du chat ni du diagnostic.
-- Pas de refonte des couleurs (palette claire/sombre déjà en place).
-- Pas de menu "Share / ⋯" type ChatGPT dans la TopBar (placeholder uniquement si demandé plus tard).
+Réponds par défaut "tout retirer + anglais" si tu veux l'aspect ChatGPT pur, sinon précise.
