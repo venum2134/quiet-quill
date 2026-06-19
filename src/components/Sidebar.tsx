@@ -469,18 +469,3 @@ function ThemeToggleMenuItem() {
   );
 }
 
-function ThemeToggleCompact() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
-  return (
-    <button
-      onClick={toggleTheme}
-      className="pplx-side-item flex items-center justify-center"
-      style={{ width: 32, height: 32, borderRadius: 6, color: "var(--c-fg)", marginBottom: 6, background: "transparent", border: "none", cursor: "pointer" }}
-      aria-label={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
-      title={isDark ? "Mode clair" : "Mode sombre"}
-    >
-      {isDark ? <Sun size={16} strokeWidth={1.7} /> : <Moon size={16} strokeWidth={1.7} />}
-    </button>
-  );
-}
