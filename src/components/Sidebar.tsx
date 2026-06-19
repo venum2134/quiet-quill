@@ -415,17 +415,16 @@ function UserMenu({ compact }: { compact?: boolean } = {}) {
       aria-label="Account"
     >A</button>
   ) : (
-    <button className="pplx-side-item flex w-full items-center gap-2.5 px-2" style={{ height: 44, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}>
+    <button className="pplx-side-item flex w-full items-center gap-2.5" style={{ height: 40, padding: "0 8px", borderRadius: 8, border: "none", background: "transparent", cursor: "pointer" }}>
       <div style={{
-        width: 26, height: 26, borderRadius: 9999, background: "var(--c-fg)",
+        width: 24, height: 24, borderRadius: 9999, background: "var(--c-fg)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        color: "var(--c-bg)", fontSize: 12, fontWeight: 500, flexShrink: 0,
+        color: "var(--c-bg)", fontSize: 11, fontWeight: 600, flexShrink: 0,
       }}>A</div>
-      <div className="flex flex-1 flex-col items-start" style={{ lineHeight: 1.2 }}>
+      <div className="flex flex-1 flex-col items-start" style={{ lineHeight: 1.15, minWidth: 0 }}>
         <span style={{ fontSize: 13, fontWeight: 500, color: "var(--c-fg)" }}>Antoine</span>
         <span style={{ fontSize: 11, color: "var(--c-muted-fg)" }}>Free plan</span>
       </div>
-      <MoreHorizontal size={14} strokeWidth={1.6} style={{ color: "var(--c-muted-fg)" }} />
     </button>
   );
 
